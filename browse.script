@@ -1,0 +1,5 @@
+#
+# Browsing script file for the pair test scenario
+#
+3600;cdn1.example.org
+7200;cdn2.example.org
