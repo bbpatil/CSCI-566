@@ -21,9 +21,9 @@ run
 4. Do the exercise in Step 13 of the tic toc tutorial *(See QuestionA2)*
 5. Add random processing delay at each node; Graph delay vs hop count.  
   For internal nodes (Indexs 0, 2, 3 and 5)  
-  ![Edge Graph Nodes](QuestionA3-Node0.svg)  
-  For internal nodes (Indexs 1 and 4)
-  ![Internal Graph Nodes](QuestionA3-Node1.svg)
+  ![Edge Graph Nodes](./QuestionA3-Node0.svg)  
+  For internal nodes (Indexs 1 and 4)  
+  ![Internal Graph Nodes](./QuestionA3-Node1.svg)
 
 ### Part B
 1. WIP
