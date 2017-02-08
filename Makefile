@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for CSCI_566_proj_1
 #
 # This file was generated with the command:
-#  opp_makemake -f
+#  opp_makemake -f --deep -O out -L../inet/out/$$\(CONFIGNAME\)/src -lINET -KINET_PROJ=../inet
 #
 
 # Name of target to be created (-o option)
@@ -15,13 +15,14 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I.
+INCLUDE_PATH = -I. -Iresults
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS =
+LIBS = -L../inet/out/$(CONFIGNAME)/src  -lINET
+LIBS += -Wl,-rpath,`abspath ../inet/out/$(CONFIGNAME)/src`
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
@@ -37,6 +38,9 @@ MSGFILES = \
 
 # SM files
 SMFILES =
+
+# Other makefile variables (-K)
+INET_PROJ=../inet
 
 #------------------------------------------------------------------------------
 
@@ -117,17 +121,19 @@ clean:
 	$(Q)-rm -rf $O
 	$(Q)-rm -f CSCI_566_proj_1 CSCI_566_proj_1.exe libCSCI_566_proj_1.so libCSCI_566_proj_1.a libCSCI_566_proj_1.dll libCSCI_566_proj_1.dylib
 	$(Q)-rm -f ./*_m.cc ./*_m.h ./*_sm.cc ./*_sm.h
+	$(Q)-rm -f results/*_m.cc results/*_m.h results/*_sm.cc results/*_sm.h
 
 cleanall: clean
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES)  ./*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES)  ./*.cc results/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/QuestionA1.o: QuestionA1.cc
 $O/QuestionA2.o: QuestionA2.cc \
-  ./QuestionA2_m.h
+	QuestionA2_m.h
 $O/QuestionA2_m.o: QuestionA2_m.cc \
-  ./QuestionA2_m.h
+	QuestionA2_m.h
+

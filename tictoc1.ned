@@ -30,53 +30,53 @@ network Tictoc1
     parameters:
         double numclients @prompt("Number of clients") = default(10);
 
-        @display("bgb=812.5,534.3;bgl=3");
+        @display("bgb=1000,600;bgl=4");
     submodules:
         configurator: IPv4NetworkConfigurator {
             parameters:
                 //                moduleTypes = "Router StandardHost";
                 //                nonIPModuleTypes = "";
-                @display("p=36.96,33.11;i=block/cogwheel");
+                @display("p=50,50;i=block/cogwheel");
         }
 
         controller: HttpController {
             parameters:
-                @display("p=46,140;i=block/cogwheel");
+                @display("p=100,50;i=block/cogwheel");
         }
 
         origin: StandardHost {
             parameters:
-                @display("i=device/server_l;p=421.96,30");
+                @display("i=device/server_l;p=950,50");
         }
 
         router_3: Router {
             parameters:
-                @display("i=abstract/router_l;p=238.7,30");
+                @display("i=abstract/router_l;p=500,50");
         }
 
         server1: StandardHost {
             parameters:
-                @display("i=device/server_l;p=421.96,150");
+                @display("i=device/server_l;p=950,300");
         }
 
         server2: StandardHost {
             parameters:
-                @display("i=device/server_l;p=36.96,150");
+                @display("i=device/server_l;p=50,300");
         }
 
         router_2: Router {
             parameters:
-                @display("i=abstract/router_l;p=238.7,150");
+                @display("i=abstract/router_l;p=500,300");
         }
 
         router_1: Router {
             parameters:
-                @display("i=abstract/router_l;p=238.7,300");
+                @display("i=abstract/router_l;p=500,550");
         }
 
         client[numclients]: StandardHost {
             parameters:
-                @display("i=device/laptop_l;p=421,300");
+                @display("i=device/laptop_l;p=950,550");
         }
 
     connections:
