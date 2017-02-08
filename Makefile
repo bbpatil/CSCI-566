@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for CSCI_566_proj_1
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -O out -L../inet/out/$$\(CONFIGNAME\)/src -lINET -KINET_PROJ=../inet
+#  opp_makemake -f --deep -O out -I../inet/src -L../inet/out/$$\(CONFIGNAME\)/src -lINET -KINET_PROJ=../inet
 #
 
 # Name of target to be created (-o option)
@@ -15,7 +15,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I. -Iresults
+INCLUDE_PATH = -I../inet/src -I. -Iresults
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -30,7 +30,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/QuestionA1.o $O/QuestionA2.o $O/QuestionA2_m.o
+OBJS = $O/QuestionA1.o $O/QuestionA2.o $O/QuestionB.o $O/QuestionA2_m.o
 
 # Message files
 MSGFILES = \
@@ -136,4 +136,19 @@ $O/QuestionA2.o: QuestionA2.cc \
 	QuestionA2_m.h
 $O/QuestionA2_m.o: QuestionA2_m.cc \
 	QuestionA2_m.h
+$O/QuestionB.o: QuestionB.cc \
+	$(INET_PROJ)/src/inet/applications/httptools/common/HttpEventMessages_m.h \
+	$(INET_PROJ)/src/inet/applications/httptools/common/HttpMessages_m.h \
+	$(INET_PROJ)/src/inet/applications/httptools/common/HttpNodeBase.h \
+	$(INET_PROJ)/src/inet/applications/httptools/common/HttpRandom.h \
+	$(INET_PROJ)/src/inet/applications/httptools/common/HttpUtils.h \
+	$(INET_PROJ)/src/inet/applications/httptools/configurator/HttpController.h \
+	$(INET_PROJ)/src/inet/applications/httptools/server/HttpServerBase.h \
+	$(INET_PROJ)/src/inet/common/Compat.h \
+	$(INET_PROJ)/src/inet/common/INETDefs.h \
+	$(INET_PROJ)/src/inet/common/INETMath.h \
+	$(INET_PROJ)/src/inet/common/InitStages.h \
+	$(INET_PROJ)/src/inet/common/lifecycle/ILifecycle.h \
+	$(INET_PROJ)/src/inet/common/lifecycle/LifecycleOperation.h \
+	$(INET_PROJ)/src/inet/features.h
 

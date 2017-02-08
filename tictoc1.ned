@@ -13,12 +13,27 @@ import inet.applications.httptools.configurator.HttpController;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
+import inet.applications.contract.ITCPApp;
 
 channel ethernetline extends ned.DatarateChannel
 {
     parameters:
         delay = 0.1us;
         datarate = 100Mbps;
+}
+
+simple CDNServerBase like ITCPApp { // same as HttpServer.ned
+    parameters:
+            string hostName = default("");                  // The domain name of the server
+            int port = default(80);                         // The listening port number
+            int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
+            string logFile = default("");                   // Name of server log file. Events are appended, allowing sharing of file for multiple servers.
+            string siteDefinition = default("");            // The site script file. Blank to disable.
+            double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
+            xml config;                                     // The XML configuration file for random sites
+        gates:
+            input tcpIn;
+            output tcpOut;
 }
 
 //
@@ -28,7 +43,7 @@ channel ethernetline extends ned.DatarateChannel
 network Tictoc1
 {
     parameters:
-        double numclients @prompt("Number of clients") = default(10);
+        double numclients @prompt("Number of clients") = default(1);
 
         @display("bgb=1000,600;bgl=4");
     submodules:
