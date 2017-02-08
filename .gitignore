@@ -1,4 +1,5 @@
 out
+*_m.*
 .*
 !.gitignore
 CSCI_566_proj_1

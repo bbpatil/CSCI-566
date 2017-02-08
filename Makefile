@@ -29,10 +29,11 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/QuestionA.o
+OBJS = $O/QuestionA1.o $O/QuestionA2.o $O/QuestionA2_m.o
 
 # Message files
-MSGFILES =
+MSGFILES = \
+    QuestionA2.msg
 
 # SM files
 SMFILES =
@@ -125,4 +126,8 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/QuestionA.o: QuestionA.cc
+$O/QuestionA1.o: QuestionA1.cc
+$O/QuestionA2.o: QuestionA2.cc \
+  ./QuestionA2_m.h
+$O/QuestionA2_m.o: QuestionA2_m.cc \
+  ./QuestionA2_m.h
