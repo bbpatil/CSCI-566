@@ -7,12 +7,14 @@
 
 using namespace omnetpp;
 
-class CDNServerBase : public inet::httptools::HttpServerBase {
+class CDNServerBase : public virtual inet::httptools::HttpServerBase {
     protected:
         inet::httptools::HttpReplyMessage* handleGetRequest(inet::httptools::HttpRequestMessage *request, std::string resource);
 };
 
-class CDNServer : public inet::httptools::HttpServer, public CDNServerBase {
+class VirtualHttpServer : public virtual inet::httptools::HttpServer {};
+
+class CDNServer : public virtual VirtualHttpServer, public virtual CDNServerBase {
 protected:
     virtual void handleMessage(cMessage *msg) override;
 };

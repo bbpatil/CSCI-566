@@ -22,7 +22,7 @@ channel ethernetline extends ned.DatarateChannel
         datarate = 100Mbps;
 }
 
-simple CDNServerBase like ITCPApp { // same as HttpServer.ned
+simple CDNServer like ITCPApp { // same as HttpServer.ned
     parameters:
             string hostName = default("");                  // The domain name of the server
             int port = default(80);                         // The listening port number
