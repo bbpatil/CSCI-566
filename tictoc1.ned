@@ -31,6 +31,7 @@ simple CDNServerBase like ITCPApp { // same as HttpServer.ned
             string siteDefinition = default("");            // The site script file. Blank to disable.
             double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
             xml config;                                     // The XML configuration file for random sites
+        	string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
         gates:
             input tcpIn;
             output tcpOut;

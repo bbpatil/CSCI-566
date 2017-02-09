@@ -137,18 +137,38 @@ $O/QuestionA2.o: QuestionA2.cc \
 $O/QuestionA2_m.o: QuestionA2_m.cc \
 	QuestionA2_m.h
 $O/QuestionB.o: QuestionB.cc \
+	$(INET_PROJ)/src/inet/applications/httptools/browser/HttpBrowser.h \
+	$(INET_PROJ)/src/inet/applications/httptools/browser/HttpBrowserBase.h \
 	$(INET_PROJ)/src/inet/applications/httptools/common/HttpEventMessages_m.h \
 	$(INET_PROJ)/src/inet/applications/httptools/common/HttpMessages_m.h \
 	$(INET_PROJ)/src/inet/applications/httptools/common/HttpNodeBase.h \
 	$(INET_PROJ)/src/inet/applications/httptools/common/HttpRandom.h \
 	$(INET_PROJ)/src/inet/applications/httptools/common/HttpUtils.h \
 	$(INET_PROJ)/src/inet/applications/httptools/configurator/HttpController.h \
+	$(INET_PROJ)/src/inet/applications/httptools/server/HttpServer.h \
 	$(INET_PROJ)/src/inet/applications/httptools/server/HttpServerBase.h \
 	$(INET_PROJ)/src/inet/common/Compat.h \
 	$(INET_PROJ)/src/inet/common/INETDefs.h \
 	$(INET_PROJ)/src/inet/common/INETMath.h \
 	$(INET_PROJ)/src/inet/common/InitStages.h \
+	$(INET_PROJ)/src/inet/common/ModuleAccess.h \
+	$(INET_PROJ)/src/inet/common/NotifierConsts.h \
 	$(INET_PROJ)/src/inet/common/lifecycle/ILifecycle.h \
 	$(INET_PROJ)/src/inet/common/lifecycle/LifecycleOperation.h \
-	$(INET_PROJ)/src/inet/features.h
+	$(INET_PROJ)/src/inet/features.h \
+	$(INET_PROJ)/src/inet/linklayer/common/MACAddress.h \
+	$(INET_PROJ)/src/inet/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/inet/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/inet/networklayer/common/L3Address.h \
+	$(INET_PROJ)/src/inet/networklayer/common/L3AddressResolver.h \
+	$(INET_PROJ)/src/inet/networklayer/common/ModuleIdAddress.h \
+	$(INET_PROJ)/src/inet/networklayer/common/ModulePathAddress.h \
+	$(INET_PROJ)/src/inet/networklayer/contract/IInterfaceTable.h \
+	$(INET_PROJ)/src/inet/networklayer/contract/IRoute.h \
+	$(INET_PROJ)/src/inet/networklayer/contract/IRoutingTable.h \
+	$(INET_PROJ)/src/inet/networklayer/contract/ipv4/IPv4Address.h \
+	$(INET_PROJ)/src/inet/networklayer/contract/ipv6/IPv6Address.h \
+	$(INET_PROJ)/src/inet/transportlayer/contract/tcp/TCPCommand_m.h \
+	$(INET_PROJ)/src/inet/transportlayer/contract/tcp/TCPSocket.h \
+	$(INET_PROJ)/src/inet/transportlayer/contract/tcp/TCPSocketMap.h
 
