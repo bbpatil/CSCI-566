@@ -1,3 +1,6 @@
 #! /bin/bash
 
+set -e # fail whole thing
+
+CONFIGNAME=gcc-debug make
 CSCI_566_proj_1 -n .:../inet/src -l ../inet/src/INET
