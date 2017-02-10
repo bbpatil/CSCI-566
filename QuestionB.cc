@@ -26,7 +26,6 @@ using namespace omnetpp;
 class CDNBrowser : public inet::httptools::HttpBrowser {
 public:
     virtual void handleMessage(cMessage *msg) override;
-    void handleDataMessage(cMessage *msg);
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
 };
 
@@ -41,17 +40,14 @@ void CDNBrowser::handleMessage(cMessage *msg) {
 
 // Direct copy from HttpBrowser.h
 void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
-    EV << "NATE WE GOT A FRIGGEN RESPONSE!!!" << endl;
-
-    EV_DEBUG << "Socket data arrived on connection " << connId << ": " << msg->getName() << endl;
-    if (yourPtr == nullptr) {
-        EV_ERROR << "socketDataArrivedfailure. Null pointer" << endl;
-        return;
-    }
+    if (yourPtr == nullptr) { EV_ERROR << "socketDataArrivedfailure. Null pointer" << endl; return; }
+    EV_DEBUG << "CDNBrowser: Socket data arrived on connection " << connId << ": " << msg->getName() << endl;
 
     SockData *sockdata = (SockData *)yourPtr;
     inet::TCPSocket *socket = sockdata->socket;
-    handleDataMessage(msg);
+
+    // Send client data to consumer
+    this->sendDirect(msg, this->getParentModule()->getSubmodule("tcpApp", 0), 0);
 
     if (--sockdata->pending == 0) {
         EV_DEBUG << "Received last expected reply on this socket. Issuing a close" << endl;
@@ -60,79 +56,69 @@ void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool
     // Message deleted in handler - do not delete here!
 }
 
-void CDNBrowser::handleDataMessage(cMessage *msg) {
-     this->sendDirect(msg, this->getParentModule()->getSubmodule("tcpApp", 0), 0);
-}
-
 
 /*
  * CDNServer Implementation
  */
 
-class CDNServerBase : public virtual inet::httptools::HttpServerBase {
-    protected:
-        cPacket *handleReceivedMessage(cMessage *msg);
-};
+class CDNServer : public inet::httptools::HttpServer {
+public:
+    CDNServer();
+    ~CDNServer();
 
-class CDNServer : public virtual inet::httptools::HttpServer, public virtual CDNServerBase {
 protected:
+    inet::TCPSocketMap sockCollection;
+
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
 };
+
+CDNServer::CDNServer() {};
+CDNServer::~CDNServer() { sockCollection.deleteSockets(); };
 
 void CDNServer::handleMessage(cMessage *msg) {
     inet::httptools::HttpReplyMessage *msg2 = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
     if (msg2 == nullptr) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
-        EV << "Figure out how to cache this fucker" << endl;
+        EV << "NATE!!! Figure out how to cache this" << endl;
+        inet::TCPSocket *socket = sockCollection.findSocketFor(msg2);
+        if (socket == nullptr) {
+            EV_ERROR << "WHOA!!!" << endl;
+            return;
+        }
+        socket->send(msg2);
         delete msg;
     }
-}
+};
 
-// Direct copy from HttpServer
 void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
-    EV << "NATE 2.0!!!" << endl;
-    if (yourPtr == nullptr) {
-        EV_ERROR << "Socket establish failure. Null pointer" << endl;
-        return;
-    }
+    if (yourPtr == nullptr) { EV_ERROR << "Socket establish failure. Null pointer" << endl; return; }
+    EV_DEBUG << "CDNServer: Socket data arrived on connection " << connId << ". Message=" << msg->getName() << ", kind=" << msg->getKind() << endl;
     inet::TCPSocket *socket = (inet::TCPSocket *)yourPtr;
 
-    // Should be a HttpReplyMessage
-    EV_DEBUG << "Socket data arrived on connection " << connId << ". Message=" << msg->getName() << ", kind=" << msg->getKind() << endl;
-
-    // call the message handler to process the message.
-    cMessage *reply = handleReceivedMessage(msg);
-    if (reply != nullptr) {
-        socket->send(reply);    // Send to socket if the reply is non-zero.
-    }
-    delete msg;    // Delete the received message here. Must not be deleted in the handler!
-}
-
-cPacket *CDNServerBase::handleReceivedMessage(cMessage *msg) {
-    EV << "LISA!!!!" << endl;
-//    return inet::httptools::HttpServerBase::handleReceivedMessage(msg);
+    // Process message
     inet::httptools::HttpRequestMessage *request = check_and_cast<inet::httptools::HttpRequestMessage *>(msg);
-    // ASSUME EVERYTHING FUCKING WORKS!!!
-
     cStringTokenizer tokenizer = cStringTokenizer(request->heading(), " ");
     std::vector<std::string> res = tokenizer.asVector();
 
-    EV << "LISA 2.0!!!! " << res[1] << endl;
-    htmlDocsServed++;
-
+    // Create Origin Lookup Request
     inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
-    EV << "LISA 3.0!!!! " << res[1] << endl;
     char target[127];
     strcpy(target, ("origin.example.org" + res[1]).c_str());
     newRequest->setTargetUrl(target);
-    EV << "LISA 4.0!!!! " << res[1] << " awww "<< this->getParentModule()->getSubmodule("tcpApp", 1)->getFullPath() << " me " << this->getFullName() << endl;
     this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
-//    this->fetcher->sendThisBitch(newRequest);
-    EV << "LISA 5.0!!!! " << res[1] << endl;
-    return generateErrorReply(request, 418);
-}
+    htmlDocsServed++;
+
+    sockCollection.addSocket(socket);
+
+//    // Fire Response
+//    cMessage *reply = generateErrorReply(request, 418);
+//    if (reply != nullptr) {
+//        socket->send(reply);
+//    }
+    delete msg; // Delete the received message here. Must not be deleted in the handler!
+};
 
 //// HttpBrowserStats extends a basic HttpBrowser with received packet stats
 //class HttpBrowserStats : public inet::httptools::HttpBrowser {
