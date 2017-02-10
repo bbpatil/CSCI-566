@@ -18,6 +18,11 @@
 
 using namespace omnetpp;
 
+
+/*
+ * CDNBrowser Implementation
+ */
+
 class CDNBrowser : public inet::httptools::HttpBrowser {
 public:
     virtual void handleMessage(cMessage *msg) override;
@@ -59,6 +64,10 @@ void CDNBrowser::handleDataMessage(cMessage *msg) {
      this->sendDirect(msg, this->getParentModule()->getSubmodule("tcpApp", 0), 0);
 }
 
+
+/*
+ * CDNServer Implementation
+ */
 
 class CDNServerBase : public virtual inet::httptools::HttpServerBase {
     protected:
@@ -124,6 +133,15 @@ cPacket *CDNServerBase::handleReceivedMessage(cMessage *msg) {
     EV << "LISA 5.0!!!! " << res[1] << endl;
     return generateErrorReply(request, 418);
 }
+
+//// HttpBrowserStats extends a basic HttpBrowser with received packet stats
+//class HttpBrowserStats : public inet::httptools::HttpBrowser {
+//protected:
+//    static simsignal_t rcvdPkSignal;
+//};
+//
+//simsignal_t HttpBrowserStats::rcvdPkSignal = registerSignal("rcvdPk");
+// emit(rcvdPkSignal, msg);
 
 Define_Module(CDNServer); // CRASH : ambiguous conversion from derived class 'CDNServer' to base class 'omnetpp::cModule'
 Define_Module(CDNBrowser);

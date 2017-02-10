@@ -15,15 +15,13 @@ import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.applications.contract.ITCPApp;
 
-channel ethernetline extends ned.DatarateChannel
-{
+channel ethernetline extends ned.DatarateChannel {
     parameters:
         delay = 0.1us;
         datarate = 100Mbps;
 }
 
-simple CDNServer like ITCPApp
-{
+simple CDNServer like ITCPApp {
     parameters:
         string hostName = default("");                  // The domain name of the server
         int port = default(80);                         // The listening port number
@@ -33,13 +31,12 @@ simple CDNServer like ITCPApp
         double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
         xml config;                                     // The XML configuration file for random sites
     gates:
-        input responses @directIn;
+        input responses @directIn; // CDNBrowser calls back into this
         input tcpIn;
         output tcpOut;
 }
 
-simple CDNBrowser like ITCPApp
-{
+simple CDNBrowser like ITCPApp {
     parameters:
         int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
         string logFile = default("");                   // Name of a browser log file. Browse events are appended, allowing sharing of file for multiple browsers.
@@ -48,26 +45,25 @@ simple CDNBrowser like ITCPApp
         xml config;                                     // The XML config file
         string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
     gates:
-        input requests @directIn;
+        input requests @directIn; // CDNServer makes requests into here
         input tcpIn;
         output tcpOut;
 }
 
-//
-// Two instances (tic and toc) of Txc1 connected both ways.
-// Tic and toc will pass messages to one another.
-//
-network Tictoc1
-{
+//simple HttpBrowserStats like ITCPApp {
+//    parameters:
+//        @signal[rcvdPk](type=cPacket);
+//        @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
+//}
+
+network Tictoc1 {
     parameters:
         double numclients @prompt("Number of clients") = default(1);
-
         @display("bgb=1000,600;bgl=4");
+
     submodules:
         configurator: IPv4NetworkConfigurator {
             parameters:
-                //                moduleTypes = "Router StandardHost";
-                //                nonIPModuleTypes = "";
                 @display("p=50,50;i=block/cogwheel");
         }
 
