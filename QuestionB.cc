@@ -18,30 +18,34 @@
 
 using namespace omnetpp;
 
-//class CDNBrowser : public inet::httptools::HttpBrowser {
-//public:
-//    void sendThisBitch(inet::httptools::HttpRequestMessage msg);
-//};
-//
-//void CDNBrowser::sendThisBitch(inet::httptools::HttpRequestMessage msg) {
-//    inet::httptools::HttpBrowser::sendRequestToServer(msg);
-//}
+class CDNBrowser : public inet::httptools::HttpBrowser {
+public:
+    void sendThisBitch(inet::httptools::HttpRequestMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
 
-
-class CDNServerBase : public virtual inet::httptools::HttpServerBase {
-//    public:
-//        CDNServerBase();
-
-    protected:
-        inet::httptools::HttpReplyMessage* handleGetRequest(inet::httptools::HttpRequestMessage *request, std::string resource);
-        cPacket *handleReceivedMessage(cMessage *msg);
-
+//protected:
 
 };
 
-//CDNServerBase::CDNServerBase() {
-//
-//}
+void CDNBrowser::sendThisBitch(inet::httptools::HttpRequestMessage *msg) {
+    inet::httptools::HttpBrowser::sendRequestToServer(msg);
+}
+
+void CDNBrowser::handleMessage(cMessage *msg) {
+    inet::httptools::HttpRequestMessage *msg2 = dynamic_cast<inet::httptools::HttpRequestMessage *>(msg);
+    if (msg2 == nullptr) {
+        inet::httptools::HttpBrowser::handleMessage(msg);
+    } else {
+        this->sendRequestToServer(msg2);
+    }
+}
+
+
+class CDNServerBase : public virtual inet::httptools::HttpServerBase {
+    protected:
+        inet::httptools::HttpReplyMessage* handleGetRequest(inet::httptools::HttpRequestMessage *request, std::string resource);
+        cPacket *handleReceivedMessage(cMessage *msg);
+};
 
 class CDNServer : public virtual inet::httptools::HttpServer, public virtual CDNServerBase {
 protected:
@@ -80,6 +84,15 @@ cPacket *CDNServerBase::handleReceivedMessage(cMessage *msg) {
     EV << "LISA 2.0!!!! " << res[1] << endl;
     htmlDocsServed++;
 
+    inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
+    EV << "LISA 3.0!!!! " << res[1] << endl;
+    char target[127];
+    strcpy(target, ("origin.example.org" + res[1]).c_str());
+    newRequest->setTargetUrl(target);
+    EV << "LISA 4.0!!!! " << res[1] << " awww "<< this->getParentModule()->getSubmodule("tcpApp", 1)->getFullPath() << " me " << this->getFullName() << endl;
+    this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
+//    this->fetcher->sendThisBitch(newRequest);
+    EV << "LISA 5.0!!!! " << res[1] << endl;
     return generateErrorReply(request, 404);
 }
 
@@ -90,3 +103,4 @@ inet::httptools::HttpReplyMessage* CDNServerBase::handleGetRequest(inet::httptoo
 }
 
 Define_Module(CDNServer); // CRASH : ambiguous conversion from derived class 'CDNServer' to base class 'omnetpp::cModule'
+Define_Module(CDNBrowser);

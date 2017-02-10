@@ -22,19 +22,36 @@ channel ethernetline extends ned.DatarateChannel
         datarate = 100Mbps;
 }
 
-simple CDNServer like ITCPApp { // same as HttpServer.ned
+simple CDNServer like ITCPApp
+{
     parameters:
-            string hostName = default("");                  // The domain name of the server
-            int port = default(80);                         // The listening port number
-            int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
-            string logFile = default("");                   // Name of server log file. Events are appended, allowing sharing of file for multiple servers.
-            string siteDefinition = default("");            // The site script file. Blank to disable.
-            double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
-            xml config;                                     // The XML configuration file for random sites
-        	string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
-        gates:
-            input tcpIn;
-            output tcpOut;
+        string hostName = default("");                  // The domain name of the server
+        int port = default(80);                         // The listening port number
+        int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
+        string logFile = default("");                   // Name of server log file. Events are appended, allowing sharing of file for multiple servers.
+        string siteDefinition = default("");            // The site script file. Blank to disable.
+        double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
+        xml config;                                     // The XML configuration file for random sites
+    gates:
+        input tcpIn;
+        output tcpOut;
+
+        input responses @directIn;
+}
+
+simple CDNBrowser like ITCPApp
+{
+    parameters:
+        int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
+        string logFile = default("");                   // Name of a browser log file. Browse events are appended, allowing sharing of file for multiple browsers.
+        string scriptFile = default("");                // The browsing script file. Blank to disable.
+        double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable. This is the time at which the browser first comes to life in a simulation scenario. Note that this can be any random distribution which OMNeT++ supports.
+        xml config;                                     // The XML config file
+        string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
+    gates:
+        input requests @directIn;
+        input tcpIn;
+        output tcpOut;
 }
 
 //
