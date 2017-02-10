@@ -60,7 +60,14 @@ public:
     ~CDNServer();
 
 protected:
-    std::map<int, inet::TCPSocket *> sockMap;
+    struct Remember {
+        inet::TCPSocket *sock;
+        std::string slug;
+    };
+
+    std::map<int, Remember> sockMap;
+    std::map<std::string, std::string> cache;
+    // TODO: LRU
 
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
@@ -68,8 +75,9 @@ protected:
 
 CDNServer::CDNServer() {};
 CDNServer::~CDNServer() {
-    for (auto & elem : sockMap) delete elem.second;
-    sockMap.clear();
+    // This is crashing when closing the Simulation
+//    for (auto & elem : sockMap) delete elem.second;
+//    sockMap.clear();
 };
 
 void CDNServer::handleMessage(cMessage *msg) {
@@ -80,25 +88,23 @@ void CDNServer::handleMessage(cMessage *msg) {
 
         auto i = sockMap.find(msg2->serial());
         if (i == sockMap.end()) {
-            EV_ERROR << "way lost!!!" << endl;
+            EV_ERROR << "Figure out how we are hitting this!!!" << endl;
             return;
         }
-        inet::TCPSocket *socket = i->second;
-        if (socket == nullptr) {
-            EV_ERROR << "CANNOT FIND SOCKET " << msg2->serial() << endl;
-            return;
-        }
-        if (socket->getState() != inet::TCPSocket::CONNECTED) {
+        Remember memory = i->second;
+        if (memory.sock->getState() != inet::TCPSocket::CONNECTED) {
             EV_WARN << "Figure out why we hit this!!!" << endl;
             sockMap.erase(msg2->serial());
             return;
         }
 
-        EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << socket->getState() << endl;
+        EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << memory.sock->getState() << endl;
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
-//        res->setOriginatorUrl(hostName.c_str());
-        EV_INFO << "Returning message " << msg2->targetUrl() << " " << msg2->originatorUrl() << endl;
-        socket->send(res);
+        // res->setOriginatorUrl(hostName.c_str()); // No idea why this won't work!!!
+        EV_INFO << "CDNServer: Returning Content 1 '" << msg2->targetUrl() << "' '" << msg2->originatorUrl() << "'" << msg2->heading() << endl;
+        EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
+        memory.sock->send(res);
+        cache[memory.slug] = msg2->payload();
         delete msg;
     }
 };
@@ -108,21 +114,42 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     EV_DEBUG << "CDNServer: Socket data arrived on connection " << connId << ". Message=" << msg->getName() << ", kind=" << msg->getKind() << endl;
     inet::TCPSocket *socket = (inet::TCPSocket *)yourPtr;
 
+
     // Process message
     inet::httptools::HttpRequestMessage *request = check_and_cast<inet::httptools::HttpRequestMessage *>(msg);
     cStringTokenizer tokenizer = cStringTokenizer(request->heading(), " ");
     std::vector<std::string> res = tokenizer.asVector();
 
-    // Create Origin Lookup Request
-    inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
-    char target[127];
-    strcpy(target, ("origin.example.org" + res[1]).c_str());
-    newRequest->setTargetUrl(target);
-    newRequest->setSerial(socket->getConnectionId());
-    this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
-    htmlDocsServed++;
+    // Search Cache
+    auto i = cache.find(res[1]);
+    if (i == cache.end()) {
+        // Create Origin Lookup Request
+        inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
+        newRequest->setTargetUrl("origin.example.org");
+        newRequest->setSerial(socket->getConnectionId());
+        EV_INFO << "CDNServer: Requesting Content 1'" << request->targetUrl() << "' '" << request->originatorUrl() << "'"<< request->heading() << endl;
+        EV_INFO << "CDNServer: Requesting Content 2'" << newRequest->targetUrl() << "' '" << newRequest->originatorUrl() << "'" << request->heading() << endl;
+        this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
+        sockMap[socket->getConnectionId()].sock = socket;
+        sockMap[socket->getConnectionId()].slug = res[1];
+    } else {
+        // Directly respond
+        char szReply[512];
+        sprintf(szReply, "HTTP/1.1 200 OK (%s)", res[1].c_str());
+        inet::httptools::HttpReplyMessage *replymsg = new inet::httptools::HttpReplyMessage(szReply);
+        replymsg->setHeading("HTTP/1.1 200 OK");
+        replymsg->setOriginatorUrl(hostName.c_str());
+        replymsg->setTargetUrl(request->originatorUrl());
+        replymsg->setProtocol(request->protocol());
+        replymsg->setSerial(request->serial());
+        replymsg->setResult(200);
+        replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
+        replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
+        replymsg->setPayload(i->second.c_str());
+        socket->send(replymsg);
 
-    sockMap[socket->getConnectionId()] = socket;
+    }
+    htmlDocsServed++;
     delete msg; // Delete the received message here. Must not be deleted in the handler!
 };
 
