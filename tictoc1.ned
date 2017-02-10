@@ -33,10 +33,9 @@ simple CDNServer like ITCPApp
         double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
         xml config;                                     // The XML configuration file for random sites
     gates:
+        input responses @directIn;
         input tcpIn;
         output tcpOut;
-
-        input responses @directIn;
 }
 
 simple CDNBrowser like ITCPApp

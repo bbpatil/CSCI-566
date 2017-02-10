@@ -13,6 +13,7 @@
  * DONT FORGET TO MAKE ALL THE INET THINGS VIRTUAL!!!
  *
  * - HttpServer needs `virtual HttpServerBase`
+ * - HttpBrowserBase needs `virtual handleDataMessage`
  *
  */
 
@@ -20,16 +21,10 @@ using namespace omnetpp;
 
 class CDNBrowser : public inet::httptools::HttpBrowser {
 public:
-    void sendThisBitch(inet::httptools::HttpRequestMessage *msg);
     virtual void handleMessage(cMessage *msg) override;
-
-//protected:
-
+    void handleDataMessage(cMessage *msg);
+    virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
 };
-
-void CDNBrowser::sendThisBitch(inet::httptools::HttpRequestMessage *msg) {
-    inet::httptools::HttpBrowser::sendRequestToServer(msg);
-}
 
 void CDNBrowser::handleMessage(cMessage *msg) {
     inet::httptools::HttpRequestMessage *msg2 = dynamic_cast<inet::httptools::HttpRequestMessage *>(msg);
@@ -38,6 +33,31 @@ void CDNBrowser::handleMessage(cMessage *msg) {
     } else {
         this->sendRequestToServer(msg2);
     }
+}
+
+// Direct copy from HttpBrowser.h
+void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
+    EV << "NATE WE GOT A FRIGGEN RESPONSE!!!" << endl;
+
+    EV_DEBUG << "Socket data arrived on connection " << connId << ": " << msg->getName() << endl;
+    if (yourPtr == nullptr) {
+        EV_ERROR << "socketDataArrivedfailure. Null pointer" << endl;
+        return;
+    }
+
+    SockData *sockdata = (SockData *)yourPtr;
+    inet::TCPSocket *socket = sockdata->socket;
+    handleDataMessage(msg);
+
+    if (--sockdata->pending == 0) {
+        EV_DEBUG << "Received last expected reply on this socket. Issuing a close" << endl;
+        socket->close();
+    }
+    // Message deleted in handler - do not delete here!
+}
+
+void CDNBrowser::handleDataMessage(cMessage *msg) {
+     this->sendDirect(msg, this->getParentModule()->getSubmodule("tcpApp", 0), 0);
 }
 
 
@@ -50,7 +70,18 @@ class CDNServerBase : public virtual inet::httptools::HttpServerBase {
 class CDNServer : public virtual inet::httptools::HttpServer, public virtual CDNServerBase {
 protected:
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
+    virtual void handleMessage(cMessage *msg) override;
 };
+
+void CDNServer::handleMessage(cMessage *msg) {
+    inet::httptools::HttpReplyMessage *msg2 = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
+    if (msg2 == nullptr) {
+        inet::httptools::HttpServer::handleMessage(msg);
+    } else {
+        EV << "Figure out how to cache this fucker" << endl;
+        delete msg;
+    }
+}
 
 // Direct copy from HttpServer
 void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
