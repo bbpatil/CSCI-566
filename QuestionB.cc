@@ -13,7 +13,6 @@
  * DONT FORGET TO MAKE ALL THE INET THINGS VIRTUAL!!!
  *
  * - HttpServer needs `virtual HttpServerBase`
- * - HttpBrowserBase needs `virtual handleDataMessage`
  *
  */
 
@@ -63,7 +62,6 @@ void CDNBrowser::handleDataMessage(cMessage *msg) {
 
 class CDNServerBase : public virtual inet::httptools::HttpServerBase {
     protected:
-        inet::httptools::HttpReplyMessage* handleGetRequest(inet::httptools::HttpRequestMessage *request, std::string resource);
         cPacket *handleReceivedMessage(cMessage *msg);
 };
 
@@ -124,13 +122,7 @@ cPacket *CDNServerBase::handleReceivedMessage(cMessage *msg) {
     this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
 //    this->fetcher->sendThisBitch(newRequest);
     EV << "LISA 5.0!!!! " << res[1] << endl;
-    return generateErrorReply(request, 404);
-}
-
-inet::httptools::HttpReplyMessage* CDNServerBase::handleGetRequest(inet::httptools::HttpRequestMessage *request, std::string resource)
-{
-    EV_DEBUG << "Handling GET request CUSTOM " << request->getName() << " resource: " << resource << endl;
-    return inet::httptools::HttpServerBase::generateErrorReply(request, 418);
+    return generateErrorReply(request, 418);
 }
 
 Define_Module(CDNServer); // CRASH : ambiguous conversion from derived class 'CDNServer' to base class 'omnetpp::cModule'
