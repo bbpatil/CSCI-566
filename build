@@ -1,0 +1,3 @@
+#! /bin/bash
+
+CONFIGNAME=gcc-debug make
