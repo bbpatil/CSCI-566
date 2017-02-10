@@ -1,3 +1,4 @@
+#include <map>
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
@@ -7,14 +8,6 @@
 #include "inet/applications/httptools/common/HttpMessages_m.h"
 #include "inet/transportlayer/contract/tcp/TCPSocket.h"
 #include "inet/transportlayer/contract/tcp/TCPSocketMap.h"
-
-/*
- *
- * DONT FORGET TO MAKE ALL THE INET THINGS VIRTUAL!!!
- *
- * - HttpServer needs `virtual HttpServerBase`
- *
- */
 
 using namespace omnetpp;
 
@@ -67,27 +60,45 @@ public:
     ~CDNServer();
 
 protected:
-    inet::TCPSocketMap sockCollection;
+    std::map<int, inet::TCPSocket *> sockMap;
 
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
 };
 
 CDNServer::CDNServer() {};
-CDNServer::~CDNServer() { sockCollection.deleteSockets(); };
+CDNServer::~CDNServer() {
+    for (auto & elem : sockMap) delete elem.second;
+    sockMap.clear();
+};
 
 void CDNServer::handleMessage(cMessage *msg) {
     inet::httptools::HttpReplyMessage *msg2 = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
     if (msg2 == nullptr) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
-        EV << "NATE!!! Figure out how to cache this" << endl;
-        inet::TCPSocket *socket = sockCollection.findSocketFor(msg2);
-        if (socket == nullptr) {
-            EV_ERROR << "WHOA!!!" << endl;
+
+        auto i = sockMap.find(msg2->serial());
+        if (i == sockMap.end()) {
+            EV_ERROR << "way lost!!!" << endl;
             return;
         }
-        socket->send(msg2);
+        inet::TCPSocket *socket = i->second;
+        if (socket == nullptr) {
+            EV_ERROR << "CANNOT FIND SOCKET " << msg2->serial() << endl;
+            return;
+        }
+        if (socket->getState() != inet::TCPSocket::CONNECTED) {
+            EV_WARN << "Figure out why we hit this!!!" << endl;
+            sockMap.erase(msg2->serial());
+            return;
+        }
+
+        EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << socket->getState() << endl;
+        inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
+//        res->setOriginatorUrl(hostName.c_str());
+        EV_INFO << "Returning message " << msg2->targetUrl() << " " << msg2->originatorUrl() << endl;
+        socket->send(res);
         delete msg;
     }
 };
@@ -107,16 +118,11 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     char target[127];
     strcpy(target, ("origin.example.org" + res[1]).c_str());
     newRequest->setTargetUrl(target);
+    newRequest->setSerial(socket->getConnectionId());
     this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
     htmlDocsServed++;
 
-    sockCollection.addSocket(socket);
-
-//    // Fire Response
-//    cMessage *reply = generateErrorReply(request, 418);
-//    if (reply != nullptr) {
-//        socket->send(reply);
-//    }
+    sockMap[socket->getConnectionId()] = socket;
     delete msg; // Delete the received message here. Must not be deleted in the handler!
 };
 
