@@ -100,11 +100,12 @@ void CDNServer::handleMessage(cMessage *msg) {
 
         EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << memory.sock->getState() << endl;
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
-        // res->setOriginatorUrl(hostName.c_str()); // No idea why this won't work!!!
+         res->setOriginatorUrl(hostName.c_str());
         EV_INFO << "CDNServer: Returning Content 1 '" << msg2->targetUrl() << "' '" << msg2->originatorUrl() << "'" << msg2->heading() << endl;
         EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
         memory.sock->send(res);
         cache[memory.slug] = msg2->payload();
+        EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
         delete msg;
     }
 };
@@ -130,10 +131,11 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         EV_INFO << "CDNServer: Requesting Content 1'" << request->targetUrl() << "' '" << request->originatorUrl() << "'"<< request->heading() << endl;
         EV_INFO << "CDNServer: Requesting Content 2'" << newRequest->targetUrl() << "' '" << newRequest->originatorUrl() << "'" << request->heading() << endl;
         this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
-        sockMap[socket->getConnectionId()].sock = socket;
-        sockMap[socket->getConnectionId()].slug = res[1];
+        sockMap[connId].sock = socket;
+        sockMap[connId].slug = res[1];
     } else {
         // Directly respond
+        EV_INFO << "CDNServer: Found Resource " << res[1] << endl;
         char szReply[512];
         sprintf(szReply, "HTTP/1.1 200 OK (%s)", res[1].c_str());
         inet::httptools::HttpReplyMessage *replymsg = new inet::httptools::HttpReplyMessage(szReply);
@@ -146,6 +148,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
         replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
         replymsg->setPayload(i->second.c_str());
+        replymsg->setByteLength(i->second.length());
         socket->send(replymsg);
 
     }
