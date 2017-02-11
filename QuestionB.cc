@@ -14,6 +14,13 @@
 using namespace omnetpp;
 
 /*
+ * Modified for debugging!
+ * - HttpServerBase.cc::updateDisplay()
+ *   Modified sprintf to be as follows:
+ *   sprintf(buf, "htm: %ld, img: %ld, txt: %ld", htmlDocsServed, imgResourcesServed, textResourcesServed);
+ */
+
+/*
  * CDNBrowser Implementation
  */
 
@@ -119,11 +126,10 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
 
     // Process message
     inet::httptools::HttpRequestMessage *request = check_and_cast<inet::httptools::HttpRequestMessage *>(msg);
-    cStringTokenizer tokenizer = cStringTokenizer(request->heading(), " ");
-    std::vector<std::string> res = tokenizer.asVector();
+    std::string resource = cStringTokenizer(request->heading(), " ").asVector()[1];
 
     // Search Cache
-    if (!lru.exists(res[1])) {
+    if (!lru.exists(resource)) {
         // Create Origin Lookup Request
         inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
         newRequest->setTargetUrl("origin.example.org");
@@ -132,12 +138,12 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         EV_INFO << "CDNServer: Requesting Content 2'" << newRequest->targetUrl() << "' '" << newRequest->originatorUrl() << "'" << request->heading() << endl;
         this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
         sockMap[connId].sock = socket;
-        sockMap[connId].slug = res[1];
+        sockMap[connId].slug = resource;
     } else {
         // Directly respond
-        EV_INFO << "CDNServer: Found Resource " << res[1] << endl;
+        EV_INFO << "CDNServer: Found Resource " << resource << endl;
         char szReply[512];
-        sprintf(szReply, "HTTP/1.1 200 OK (%s)", res[1].c_str());
+        sprintf(szReply, "HTTP/1.1 200 OK (%s)", resource.c_str());
         inet::httptools::HttpReplyMessage *replymsg = new inet::httptools::HttpReplyMessage(szReply);
         replymsg->setHeading("HTTP/1.1 200 OK");
         replymsg->setOriginatorUrl(hostName.c_str());
@@ -147,7 +153,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         replymsg->setResult(200);
         replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
         replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
-        std::string body = lru.get(res[1]);
+        std::string body = lru.get(resource);
         replymsg->setPayload(body.c_str());
         replymsg->setByteLength(body.length());
         socket->send(replymsg);

@@ -1,6 +1,15 @@
 #! /bin/bash
 
 set -e # fail whole thing
+set -o pipefail # fail pipes
 
-CONFIGNAME=gcc-debug make
-CSCI_566_proj_1 -n .:../inet/src -l ../inet/src/INET
+echo "Building local package"
+make CONFIGNAME=gcc-debug
+
+echo "Building inet package"
+pushd ../inet/src > /dev/null
+make CONFIGNAME=gcc-debug all
+popd > /dev/null
+
+echo "Starting simulation"
+CSCI_566_proj_1 -c QuestionB -n .:../inet/src -l ../inet/src/INET | sed '/Could not load image/d'
