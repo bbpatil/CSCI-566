@@ -1,14 +1,7 @@
-#include <map>
 #include <unordered_map>
-#include <stdio.h>
-#include <string.h>
 #include <omnetpp.h>
-#include "inet/common/ModuleAccess.h"
 #include "inet/applications/httptools/server/HttpServer.h"
 #include "inet/applications/httptools/browser/HttpBrowser.h"
-#include "inet/applications/httptools/common/HttpMessages_m.h"
-#include "inet/transportlayer/contract/tcp/TCPSocket.h"
-#include "inet/transportlayer/contract/tcp/TCPSocketMap.h"
 #include "lru_h.hpp"
 
 using namespace omnetpp;
