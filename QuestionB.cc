@@ -159,7 +159,15 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         socket->send(replymsg);
 
     }
-    htmlDocsServed++;
+
+    // Update service stats
+    switch (inet::httptools::getResourceCategory(inet::httptools::parseResourceName(resource))) {
+        case inet::httptools::CT_HTML: htmlDocsServed++; break;
+        case inet::httptools::CT_TEXT: textResourcesServed++; break;
+        case inet::httptools::CT_IMAGE: imgResourcesServed++; break;
+        default:
+            EV_WARN << "CDNServer: Received Unknown request type: " << resource << endl;
+    };
     delete msg; // Delete the received message here. Must not be deleted in the handler!
 };
 
