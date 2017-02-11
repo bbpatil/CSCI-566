@@ -32,7 +32,6 @@ void CDNBrowser::handleMessage(cMessage *msg) {
     }
 }
 
-// Direct copy from HttpBrowser.h
 void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
     if (yourPtr == nullptr) { EV_ERROR << "socketDataArrivedfailure. Null pointer" << endl; return; }
     EV_DEBUG << "CDNBrowser: Socket data arrived on connection " << connId << ": " << msg->getName() << endl;
@@ -164,6 +163,12 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     delete msg; // Delete the received message here. Must not be deleted in the handler!
 };
 
+
+/*
+ * StatsBrowser Implementation
+ */
+
+class StatsBrowser : public inet::httptools::HttpBrowser {};
 //// HttpBrowserStats extends a basic HttpBrowser with received packet stats
 //class HttpBrowserStats : public inet::httptools::HttpBrowser {
 //protected:
@@ -173,5 +178,6 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
 //simsignal_t HttpBrowserStats::rcvdPkSignal = registerSignal("rcvdPk");
 // emit(rcvdPkSignal, msg);
 
-Define_Module(CDNServer); // CRASH : ambiguous conversion from derived class 'CDNServer' to base class 'omnetpp::cModule'
+Define_Module(CDNServer);
 Define_Module(CDNBrowser);
+Define_Module(StatsBrowser);

@@ -56,7 +56,7 @@ simple CDNBrowser like ITCPApp {
 //        @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
 //}
 
-network Tictoc1 {
+network QuestionB {
     parameters:
         double numclients @prompt("Number of clients") = default(1);
         @display("bgb=1000,600;bgl=4");
