@@ -151,7 +151,6 @@ $O/QuestionB.o: QuestionB.cc \
 	$(INET_PROJ)/src/inet/common/INETDefs.h \
 	$(INET_PROJ)/src/inet/common/INETMath.h \
 	$(INET_PROJ)/src/inet/common/InitStages.h \
-	$(INET_PROJ)/src/inet/common/ModuleAccess.h \
 	$(INET_PROJ)/src/inet/common/NotifierConsts.h \
 	$(INET_PROJ)/src/inet/common/lifecycle/ILifecycle.h \
 	$(INET_PROJ)/src/inet/common/lifecycle/LifecycleOperation.h \
@@ -163,7 +162,6 @@ $O/QuestionB.o: QuestionB.cc \
 	$(INET_PROJ)/src/inet/networklayer/common/L3AddressResolver.h \
 	$(INET_PROJ)/src/inet/networklayer/common/ModuleIdAddress.h \
 	$(INET_PROJ)/src/inet/networklayer/common/ModulePathAddress.h \
-	$(INET_PROJ)/src/inet/networklayer/contract/IInterfaceTable.h \
 	$(INET_PROJ)/src/inet/networklayer/contract/IRoute.h \
 	$(INET_PROJ)/src/inet/networklayer/contract/IRoutingTable.h \
 	$(INET_PROJ)/src/inet/networklayer/contract/ipv4/IPv4Address.h \

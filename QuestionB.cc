@@ -157,8 +157,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         case inet::httptools::CT_HTML: htmlDocsServed++; break;
         case inet::httptools::CT_TEXT: textResourcesServed++; break;
         case inet::httptools::CT_IMAGE: imgResourcesServed++; break;
-        default:
-            EV_WARN << "CDNServer: Received Unknown request type: " << resource << endl;
+        default: EV_WARN << "CDNServer: Received Unknown request type: " << resource << endl; break;
     };
     delete msg; // Delete the received message here. Must not be deleted in the handler!
 };

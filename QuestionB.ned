@@ -1,19 +1,11 @@
 package csci_566_proj_1;
-//
-// This file is part of an OMNeT++/OMNEST simulation example.
-//
-// Copyright (C) 2003 Ahmet Sekercioglu
-// Copyright (C) 2003-2015 Andras Varga
-//
-// This file is distributed WITHOUT ANY WARRANTY. See the file
-// `license' for details on this and other legal matters.
-//
 
 import inet.applications.httptools.configurator.HttpController;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.applications.contract.ITCPApp;
+import inet.applications.httptools.browser.HttpBrowser;
 
 channel ethernetline extends ned.DatarateChannel {
     parameters:
@@ -50,11 +42,11 @@ simple CDNBrowser like ITCPApp {
         output tcpOut;
 }
 
-//simple HttpBrowserStats like ITCPApp {
-//    parameters:
-//        @signal[rcvdPk](type=cPacket);
-//        @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
-//}
+simple StatsBrowser extends HttpBrowser {
+    parameters:
+        @signal[rcvdPk](type=cPacket);
+        @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
+}
 
 network QuestionB {
     parameters:
