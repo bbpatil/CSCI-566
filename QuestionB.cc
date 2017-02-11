@@ -1,4 +1,5 @@
 #include <map>
+#include <unordered_map>
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
@@ -8,9 +9,9 @@
 #include "inet/applications/httptools/common/HttpMessages_m.h"
 #include "inet/transportlayer/contract/tcp/TCPSocket.h"
 #include "inet/transportlayer/contract/tcp/TCPSocketMap.h"
+#include "lru_h.hpp"
 
 using namespace omnetpp;
-
 
 /*
  * CDNBrowser Implementation
@@ -66,14 +67,13 @@ protected:
     };
 
     std::map<int, Remember> sockMap;
-    std::map<std::string, std::string> cache;
-    // TODO: LRU
+    cache::lru_cache<std::string, std::string> lru;
 
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
 };
 
-CDNServer::CDNServer() {};
+CDNServer::CDNServer() : lru(2) {}; // TODO: parse 2 from model parameters
 CDNServer::~CDNServer() {
     // This is crashing when closing the Simulation
 //    for (auto & elem : sockMap) delete elem.second;
@@ -89,12 +89,14 @@ void CDNServer::handleMessage(cMessage *msg) {
         auto i = sockMap.find(msg2->serial());
         if (i == sockMap.end()) {
             EV_ERROR << "Figure out how we are hitting this!!!" << endl;
+            delete msg;
             return;
         }
         Remember memory = i->second;
         if (memory.sock->getState() != inet::TCPSocket::CONNECTED) {
             EV_WARN << "Figure out why we hit this!!!" << endl;
             sockMap.erase(msg2->serial());
+            delete msg;
             return;
         }
 
@@ -104,7 +106,7 @@ void CDNServer::handleMessage(cMessage *msg) {
         EV_INFO << "CDNServer: Returning Content 1 '" << msg2->targetUrl() << "' '" << msg2->originatorUrl() << "'" << msg2->heading() << endl;
         EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
         memory.sock->send(res);
-        cache[memory.slug] = msg2->payload();
+        lru.put(memory.slug, msg2->payload());
         EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
         delete msg;
     }
@@ -115,15 +117,13 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     EV_DEBUG << "CDNServer: Socket data arrived on connection " << connId << ". Message=" << msg->getName() << ", kind=" << msg->getKind() << endl;
     inet::TCPSocket *socket = (inet::TCPSocket *)yourPtr;
 
-
     // Process message
     inet::httptools::HttpRequestMessage *request = check_and_cast<inet::httptools::HttpRequestMessage *>(msg);
     cStringTokenizer tokenizer = cStringTokenizer(request->heading(), " ");
     std::vector<std::string> res = tokenizer.asVector();
 
     // Search Cache
-    auto i = cache.find(res[1]);
-    if (i == cache.end()) {
+    if (!lru.exists(res[1])) {
         // Create Origin Lookup Request
         inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
         newRequest->setTargetUrl("origin.example.org");
@@ -147,8 +147,9 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         replymsg->setResult(200);
         replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
         replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
-        replymsg->setPayload(i->second.c_str());
-        replymsg->setByteLength(i->second.length());
+        std::string body = lru.get(res[1]);
+        replymsg->setPayload(body.c_str());
+        replymsg->setByteLength(body.length());
         socket->send(replymsg);
 
     }
