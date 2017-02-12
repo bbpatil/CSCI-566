@@ -75,6 +75,7 @@ protected:
     virtual void handleMessage(cMessage *msg) override;
 
     void requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state);
+    inet::httptools::HttpReplyMessage* genCacheResponse(inet::httptools::HttpRequestMessage *request, std::string resource);
 };
 
 CDNServer::CDNServer() : lru(2) {}; // TODO: parse 2 from model parameters
@@ -105,42 +106,26 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     // Process message
     inet::httptools::HttpRequestMessage *request = check_and_cast<inet::httptools::HttpRequestMessage *>(msg);
     std::string resource = cStringTokenizer(request->heading(), " ").asVector()[1];
+    std::string origin = request->originatorUrl();
 
-    // Search Cache
-    if (!lru.exists(resource)) {
-//        // Create Origin Lookup Request
-//        inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
-//        newRequest->setTargetUrl("origin.example.org");
-//        newRequest->setSerial(socket->getConnectionId());
-//        EV_INFO << "CDNServer: Requesting Content'" << request->targetUrl() << "' '" << request->originatorUrl() << "'"<< request->heading() << endl;
-//        this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
-//        sockMap[connId].sock = socket;
-//        sockMap[connId].slug = resource;
-//        sockMap[connId].serial = request->serial();
-//        sockMap[connId].state = ORIGIN;
+    if (lru.exists(resource)) {
+        // Directly repond
+        socket->send(genCacheResponse(request, resource));
+
+    } else if (origin == "cdn1.example.org" || origin == "cdn2.example.org") {
+        // If it's a request from the other CDN server and we don't have it
+        socket->send(generateErrorReply(request, 400));
+        badRequests++;
+        delete msg;
+        return;
+
+    } else {
+        // Create CDN Lookup Request
         sockMap[connId].slug = resource;
         sockMap[connId].serial = connId;
         sockMap[connId].sock = socket;
         sockMap[connId].state = ORIGIN;
         requestContent(request, connId, ORIGIN);
-    } else {
-        // Directly respond
-        EV_INFO << "CDNServer: Found Resource " << resource << endl;
-        char szReply[512];
-        sprintf(szReply, "HTTP/1.1 200 OK (%s)", resource.c_str());
-        inet::httptools::HttpReplyMessage *replymsg = new inet::httptools::HttpReplyMessage(szReply);
-        replymsg->setHeading("HTTP/1.1 200 OK");
-        replymsg->setOriginatorUrl(hostName.c_str());
-        replymsg->setTargetUrl(request->originatorUrl());
-        replymsg->setProtocol(request->protocol());
-        replymsg->setSerial(request->serial());
-        replymsg->setResult(200);
-        replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
-        replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
-        std::string body = lru.get(resource);
-        replymsg->setPayload(body.c_str());
-        replymsg->setByteLength(body.length());
-        socket->send(replymsg);
     }
 
     // Update service stats
@@ -166,16 +151,25 @@ void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int con
     newRequest->setSerial(connID);
     EV_INFO << "CDNServer: Requesting Content'" << req->targetUrl() << "' '" << req->originatorUrl() << "'"<< req->heading() << endl;
     this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
-//    sockMap[connId].sock = socket;
-//    sockMap[connId].slug = resource;
-//    sockMap[connId].serial = request->serial();
-//    sockMap[connId].state = state;
-//    return Remember{
-//      sock: socket,
-//      slug: resource,
-//      serial: request->serial(),
-//      state: state,
-//    };
+};
+
+inet::httptools::HttpReplyMessage* CDNServer::genCacheResponse(inet::httptools::HttpRequestMessage *request, std::string resource) {
+    EV_INFO << "CDNServer: Found Resource " << resource << endl;
+    char szReply[512];
+    sprintf(szReply, "HTTP/1.1 200 OK (%s)", resource.c_str());
+    inet::httptools::HttpReplyMessage *replymsg = new inet::httptools::HttpReplyMessage(szReply);
+    replymsg->setHeading("HTTP/1.1 200 OK");
+    replymsg->setOriginatorUrl(hostName.c_str());
+    replymsg->setTargetUrl(request->originatorUrl());
+    replymsg->setProtocol(request->protocol());
+    replymsg->setSerial(request->serial());
+    replymsg->setResult(200);
+    replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
+    replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
+    std::string body = lru.get(resource);
+    replymsg->setPayload(body.c_str());
+    replymsg->setByteLength(body.length());
+    return replymsg;
 };
 
 
