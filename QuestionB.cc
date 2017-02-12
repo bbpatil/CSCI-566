@@ -69,7 +69,6 @@ protected:
         inet::httptools::HttpRequestMessage* req;
     };
 
-    // TODO: improve cache by providing content type too
     struct CacheEntry {
         std::string payload;
         int contentType;
@@ -83,7 +82,7 @@ protected:
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
 
-    // INTERNAL METHODS
+private:
     void requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state);
     inet::httptools::HttpReplyMessage* genCacheResponse(inet::httptools::HttpRequestMessage *request, std::string resource);
 };
@@ -101,7 +100,6 @@ void CDNServer::handleMessage(cMessage *msg) {
             delete msg;
             return;
         }
-
         Remember memory = i->second;
 
         // Content not found on neighbor CDN, request from origin
@@ -221,7 +219,7 @@ simsignal_t StatsBrowser::rcvdPkSignal = registerSignal("rcvdPk");
 
 
 void StatsBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
-    EV_INFO << "NATE!!!" << endl;
+    EV_INFO << "Statistics-ing!!!" << endl;
     emit(rcvdPkSignal, msg);
     inet::httptools::HttpBrowser::socketDataArrived(connId, yourPtr, msg, urgent);
 };
