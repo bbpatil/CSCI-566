@@ -34,13 +34,11 @@ void TxcA1::handleMessage(cMessage *msg) {
 void TxcA1::forwardMessage(cMessage *msg) {
     int n = gateSize("port");
 
-    // START: Exercise 10 (Question 3) If randomly generated number is same as input gate, generate again
     cGate *arrival = msg->getArrivalGate();
     int k;
     do {
         k = intuniform(0, n-1);
     } while (arrival != nullptr && n > 1 && k == arrival->getIndex());
-    // STOP: Exercise 10 (Question 3)
 
     EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "port$o", k);

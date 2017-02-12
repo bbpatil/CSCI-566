@@ -24,7 +24,7 @@ simple CDNServer like ITCPApp {
         xml config;                                     // The XML configuration file for random sites
         int cacheSize = default(30);
     gates:
-        input responses @directIn; // CDNBrowser calls back into this
+        input responses @directIn; // Direct gate for CDNBrowser communication
         input tcpIn;
         output tcpOut;
 }
@@ -38,12 +38,12 @@ simple CDNBrowser like ITCPApp {
         xml config;                                     // The XML config file
         string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
     gates:
-        input requests @directIn; // CDNServer makes requests into here
+        input requests @directIn; // Direct gate for CDNSever communication
         input tcpIn;
         output tcpOut;
 }
 
-// TODO: make this extends and still have the c overrides work correctly
+// TODO: make this extends and still have the coverrides work correctly
 simple StatsBrowser like ITCPApp {
     parameters:
         int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
@@ -52,11 +52,11 @@ simple StatsBrowser like ITCPApp {
         double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable. This is the time at which the browser first comes to life in a simulation scenario. Note that this can be any random distribution which OMNeT++ supports.
         xml config;                                     // The XML config file
         string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
-    
-    	// Stuff not in HttpBrowser
+
+    	// Statistics for measuring end to end delay
         @signal[rcvdPk](type=cPacket);
         @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
-        
+
 	gates:
         input tcpIn;
         output tcpOut;
@@ -108,6 +108,7 @@ network QuestionB {
                 @display("i=abstract/router_l;p=500,550");
         }
 
+        //TODO: have numClient as parameter, not hardcoded
         client[numclients]: StandardHost {
             parameters:
                 @display("i=device/laptop_l;p=950,550");
@@ -126,4 +127,3 @@ network QuestionB {
             client[i].ethg++ <--> ethernetline <--> router_1.ethg++;
         }
 }
-

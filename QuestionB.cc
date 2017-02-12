@@ -10,19 +10,21 @@ namespace omnetpp {
  * Modified for debugging!
  * - HttpServerBase.cc::updateDisplay()
  *   Modified sprintf to be as follows:
- *   sprintf(buf, "htm: %ld, img: %ld, txt: %ld", htmlDocsServed, imgResourcesServed, textResourcesServed);
+ *   sprintf(buf, "htm: %ld, img: %ld, txt: %ld", htmlDocsServed,
+ *   imgResourcesServed, textResourcesServed);
  */
 
 /*
- * CDNBrowser Implementation
+ *  CDNBrowser Implementation
+ *  Forwards/recieves messages from origin server.
  */
-
 class CDNBrowser : public inet::httptools::HttpBrowser {
 public:
     virtual void handleMessage(cMessage *msg) override;
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
 };
 
+// Adapted from HttpBrowser::handleMessage
 void CDNBrowser::handleMessage(cMessage *msg) {
     inet::httptools::HttpRequestMessage *msg2 = dynamic_cast<inet::httptools::HttpRequestMessage *>(msg);
     if (msg2 == nullptr) {
@@ -32,6 +34,7 @@ void CDNBrowser::handleMessage(cMessage *msg) {
     }
 }
 
+// Adapted from HttpBrowser::socketDataArrived
 void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
     if (yourPtr == nullptr) { EV_ERROR << "socketDataArrivedfailure. Null pointer" << endl; return; }
     EV_DEBUG << "CDNBrowser: Socket data arrived on connection " << connId << ": " << msg->getName() << endl;
@@ -52,8 +55,8 @@ void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool
 
 /*
  * CDNServer Implementation
+ * Server for clients. If resource is not cached, checks with other CDN servers * before obtaining content from origin.
  */
-
 class CDNServer : public inet::httptools::HttpServer {
 public:
     CDNServer();
@@ -89,6 +92,7 @@ private:
 
 CDNServer::CDNServer() : lru(30) {}; // TODO: parse value from model parameters
 
+// Overrides HttpServer::handleMessage
 void CDNServer::handleMessage(cMessage *msg) {
     EV_INFO << "NATE: " << lru.size() << endl;
     inet::httptools::HttpReplyMessage *reply = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
@@ -128,6 +132,7 @@ void CDNServer::handleMessage(cMessage *msg) {
     }
 };
 
+// Overrides HttpServer::socketDataArrived
 void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
     if (yourPtr == nullptr) { EV_ERROR << "Socket establish failure. Null pointer" << endl; return; }
     EV_DEBUG << "CDNServer: Socket data arrived on connection " << connId << ". Message=" << msg->getName() << ", kind=" << msg->getKind() << endl;
@@ -170,6 +175,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     delete msg;
 };
 
+// Requested content not in cache, forward request to other CDNServers first, then origin server as last resort, then put reply into our own cache
 void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int id, State state) {
     inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*req);
     if (state == ORIGIN) {
@@ -208,8 +214,8 @@ inet::httptools::HttpReplyMessage* CDNServer::genCacheResponse(inet::httptools::
 
 /*
  * StatsBrowser Implementation
+ * Normal client browser with statistics added for analysis.
  */
-
 class StatsBrowser : public inet::httptools::HttpBrowser {
     protected:
         static simsignal_t rcvdPkSignal;
@@ -218,7 +224,7 @@ class StatsBrowser : public inet::httptools::HttpBrowser {
 
 simsignal_t StatsBrowser::rcvdPkSignal = registerSignal("rcvdPk");
 
-
+// Overrides HttpBrowser::socketDataArrived
 void StatsBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
     EV_INFO << "Statistics-ing!!!" << endl;
     emit(rcvdPkSignal, msg);
