@@ -160,26 +160,27 @@ class StatsBrowser : public inet::httptools::HttpBrowser {
     protected:
         static simsignal_t RTTSignal;
 
+//        void handleDataMessage(cMessage *msg);
+//        void StatsBrowser::submitToSocket(const char *moduleName, int connectPort, inet::httptools::HttpRequestMessage *msg);
+
 //        virtual void handleDataMessage(cMessage *msg) override;
 };
 
 
-void StatsBrowser::initialize() {
-    simsignal_t StatsBrowser::RTTSignal = registerSignal("RTT");
-}
+simsignal_t StatsBrowser::RTTSignal = registerSignal("RTT");
 
-void StatsBrowser::handleDataMessage(cMessage *msg) {
-  simtime_t RTT = simTime() - msg->getSendingTime();
-   EV << "RTT is : "<< RTT << endl;
-   emit(RTTSignal, RTT);
-   inet::httptools::HttpBrowser::handleDataMessage(msg);
-};
-
-
-void HttpBrowser::submitToSocket(const char *moduleName, int connectPort, HttpRequestMessage *msg){
-  msg->setSendingTime();
-  inet::httptools::HttpBrowser::handleDataMessage(onst char *moduleName, int connectPort, HttpRequestMessage *msg);
-}
+//void StatsBrowser::handleDataMessage(cMessage *msg) {
+//  simtime_t RTT = simTime() - msg->getSendingTime();
+//   EV << "RTT is : "<< RTT << endl;
+//   emit(RTTSignal, RTT);
+//   inet::httptools::HttpBrowser::handleDataMessage(msg);
+//};
+//
+//
+//void StatsBrowser::submitToSocket(const char *moduleName, int connectPort, inet::httptools::HttpRequestMessage *msg){
+//  msg->setSendingTime();
+//  inet::httptools::HttpBrowser::handleDataMessage(moduleName, connectPort, msg);
+//}
 
 Define_Module(CDNServer);
 Define_Module(CDNBrowser);
