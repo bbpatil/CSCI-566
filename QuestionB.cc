@@ -214,19 +214,17 @@ inet::httptools::HttpReplyMessage* CDNServer::genCacheResponse(inet::httptools::
 class StatsBrowser : public inet::httptools::HttpBrowser {
     protected:
         static simsignal_t rcvdPkSignal;
-
-//        virtual void handleDataMessage(cMessage *msg) override;
+        virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
 };
 
 simsignal_t StatsBrowser::rcvdPkSignal = registerSignal("rcvdPk");
 
 
-//void StatsBrowser::handleDataMessage(cMessage *msg) {
-//    EV << "NATE!!!" << endl;
-//    inet::httptools::HttpBrowser::handleDataMessage(msg);
-//};
-
-// emit(rcvdPkSignal, msg);
+void StatsBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) {
+    EV_INFO << "NATE!!!" << endl;
+    emit(rcvdPkSignal, msg);
+    inet::httptools::HttpBrowser::socketDataArrived(connId, yourPtr, msg, urgent);
+};
 
 Define_Module(CDNServer);
 Define_Module(CDNBrowser);
