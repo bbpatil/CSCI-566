@@ -22,6 +22,7 @@ simple CDNServer like ITCPApp {
         string siteDefinition = default("");            // The site script file. Blank to disable.
         double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
         xml config;                                     // The XML configuration file for random sites
+        int cacheSize = default(30);
     gates:
         input responses @directIn; // CDNBrowser calls back into this
         input tcpIn;

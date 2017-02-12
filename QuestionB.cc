@@ -87,9 +87,10 @@ private:
     inet::httptools::HttpReplyMessage* genCacheResponse(inet::httptools::HttpRequestMessage *request, std::string resource);
 };
 
-CDNServer::CDNServer() : lru(30) {}; // TODO: parse 2 from model parameters
+CDNServer::CDNServer() : lru(30) {}; // TODO: parse value from model parameters
 
 void CDNServer::handleMessage(cMessage *msg) {
+    EV_INFO << "NATE: " << lru.size() << endl;
     inet::httptools::HttpReplyMessage *reply = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
     if (reply == nullptr) {
         inet::httptools::HttpServer::handleMessage(msg);
