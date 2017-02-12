@@ -90,11 +90,11 @@ protected:
 CDNServer::CDNServer() : lru(30) {}; // TODO: parse 2 from model parameters
 
 void CDNServer::handleMessage(cMessage *msg) {
-    inet::httptools::HttpReplyMessage *msg2 = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
-    if (msg2 == nullptr) {
+    inet::httptools::HttpReplyMessage *reply = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
+    if (reply == nullptr) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
-        auto i = sockMap.find(msg2->serial());
+        auto i = sockMap.find(reply->serial());
         if (i == sockMap.end()) {
             EV_INFO << "TODO: figure out how we are doubling up here!!" << endl;
             delete msg;
@@ -104,25 +104,25 @@ void CDNServer::handleMessage(cMessage *msg) {
         Remember memory = i->second;
 
         // Content not found on neighbor CDN, request from origin
-        if (memory.state == CDN && msg2->result() != 200) {
+        if (memory.state == CDN && reply->result() != 200) {
             EV_INFO << "CDNServer: Neighbor CDN didn't have content, requesting from Origin: " << memory.req->heading() << endl;
             memory.state = ORIGIN;
-            requestContent(memory.req, msg2->serial(), ORIGIN);
+            requestContent(memory.req, reply->serial(), ORIGIN);
             delete msg;
             return;
         }
 
-        inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
+        inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*reply);
         res->setOriginatorUrl(hostName.c_str());
-        res->setSerial(msg2->serial());
-        EV_INFO << "CDNServer: Returning Content 1 '" << msg2->targetUrl() << "' '" << msg2->originatorUrl() << "'" << msg2->heading() << endl;
+        res->setSerial(reply->serial());
+        EV_INFO << "CDNServer: Returning Content 1 '" << reply->targetUrl() << "' '" << reply->originatorUrl() << "'" << reply->heading() << endl;
         EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
         memory.sock->send(res);
         char payload[127];
-        strcpy(payload, msg2->payload());
+        strcpy(payload, reply->payload());
         lru.put(memory.slug, payload);
         EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
-        sockMap.erase(msg2->serial());
+        sockMap.erase(reply->serial());
         EV_INFO << "CDNServer: Remaining active memory: " << sockMap.size() << endl;
         delete msg;
     }
@@ -195,7 +195,7 @@ inet::httptools::HttpReplyMessage* CDNServer::genCacheResponse(inet::httptools::
     replymsg->setProtocol(request->protocol());
     replymsg->setSerial(request->serial());
     replymsg->setResult(200);
-    replymsg->setContentType(inet::httptools::CT_HTML);    // Emulates the content-type header field
+    replymsg->setContentType(inet::httptools::CT_HTML);
     replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
     std::string body = lru.get(resource);
     replymsg->setPayload(body.c_str());
