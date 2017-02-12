@@ -66,6 +66,7 @@ protected:
         std::string slug;
         int serial; // TODO: remove (its the key for this value in the map)
         State state;
+        inet::httptools::HttpRequestMessage* req;
     };
 
     std::map<int, Remember> sockMap;
@@ -78,7 +79,7 @@ protected:
     inet::httptools::HttpReplyMessage* genCacheResponse(inet::httptools::HttpRequestMessage *request, std::string resource);
 };
 
-CDNServer::CDNServer() : lru(2) {}; // TODO: parse 2 from model parameters
+CDNServer::CDNServer() : lru(30) {}; // TODO: parse 2 from model parameters
 
 void CDNServer::handleMessage(cMessage *msg) {
     inet::httptools::HttpReplyMessage *msg2 = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
@@ -86,6 +87,16 @@ void CDNServer::handleMessage(cMessage *msg) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
         Remember memory = sockMap.find(msg2->serial())->second;
+
+        // Content not found on neighbor CDN, request from origin
+        if (memory.state == CDN && msg2->result() != 200) {
+            EV_INFO << "CDNServer: Neighbor CDN didn't have content, requesting from Origin" << endl;
+            memory.state = ORIGIN;
+            requestContent(memory.req, msg2->serial(), ORIGIN);
+            delete msg;
+            return;
+        }
+
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
         res->setOriginatorUrl(hostName.c_str());
         res->setSerial(memory.serial);
@@ -94,6 +105,7 @@ void CDNServer::handleMessage(cMessage *msg) {
         memory.sock->send(res);
         lru.put(memory.slug, msg2->payload());
         EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
+//        sockMap.erase(msg2->serial()); // TODO: cleanup sockMap!!!
         delete msg;
     }
 };
@@ -125,10 +137,11 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         sockMap[connId].serial = connId;
         sockMap[connId].sock = socket;
         sockMap[connId].state = ORIGIN;
+        sockMap[connId].req = request;
         requestContent(request, connId, ORIGIN);
     }
 
-    // Update service stats
+    // Update service statistics
     switch (inet::httptools::getResourceCategory(inet::httptools::parseResourceName(resource))) {
         case inet::httptools::CT_HTML: htmlDocsServed++; break;
         case inet::httptools::CT_TEXT: textResourcesServed++; break;
@@ -149,7 +162,7 @@ void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int con
     }
     newRequest->setOriginatorUrl(hostName.c_str());
     newRequest->setSerial(connID);
-    EV_INFO << "CDNServer: Requesting Content'" << req->targetUrl() << "' '" << req->originatorUrl() << "'"<< req->heading() << endl;
+    EV_INFO << "CDNServer: Requesting Content '" << req->targetUrl() << "' '" << req->originatorUrl() << "'"<< req->heading() << endl;
     this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
 };
 
