@@ -44,8 +44,8 @@ simple CDNBrowser like ITCPApp {
 
 simple StatsBrowser extends HttpBrowser {
     parameters:
-        @signal[rcvdPk](type=cPacket);
-        @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
+      @signal[RTT](type="float");
+      @statistic[RTT](title="RTT"; source="RTT"; record=mean, sum, stats, vector);
 }
 
 network QuestionB {
@@ -112,4 +112,3 @@ network QuestionB {
             client[i].ethg++ <--> ethernetline <--> router_1.ethg++;
         }
 }
-

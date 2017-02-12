@@ -158,20 +158,28 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
 
 class StatsBrowser : public inet::httptools::HttpBrowser {
     protected:
-        static simsignal_t rcvdPkSignal;
+        static simsignal_t RTTSignal;
 
 //        virtual void handleDataMessage(cMessage *msg) override;
 };
 
-simsignal_t StatsBrowser::rcvdPkSignal = registerSignal("rcvdPk");
+
+void StatsBrowser::initialize() {
+    simsignal_t StatsBrowser::RTTSignal = registerSignal("RTT");
+}
+
+void StatsBrowser::handleDataMessage(cMessage *msg) {
+  simtime_t RTT = simTime() - msg->getSendingTime();
+   EV << "RTT is : "<< RTT << endl;
+   emit(RTTSignal, RTT);
+   inet::httptools::HttpBrowser::handleDataMessage(msg);
+};
 
 
-//void StatsBrowser::handleDataMessage(cMessage *msg) {
-//    EV << "NATE!!!" << endl;
-//    inet::httptools::HttpBrowser::handleDataMessage(msg);
-//};
-
-// emit(rcvdPkSignal, msg);
+void HttpBrowser::submitToSocket(const char *moduleName, int connectPort, HttpRequestMessage *msg){
+  msg->setSendingTime();
+  inet::httptools::HttpBrowser::handleDataMessage(onst char *moduleName, int connectPort, HttpRequestMessage *msg);
+}
 
 Define_Module(CDNServer);
 Define_Module(CDNBrowser);
