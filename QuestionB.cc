@@ -65,6 +65,7 @@ protected:
         inet::TCPSocket *sock;
         std::string slug;
         State state;
+        int serial;
         inet::httptools::HttpRequestMessage* req;
     };
 
@@ -114,7 +115,7 @@ void CDNServer::handleMessage(cMessage *msg) {
 
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*reply);
         res->setOriginatorUrl(hostName.c_str());
-        res->setSerial(reply->serial());
+        res->setSerial(memory.serial);
         EV_INFO << "CDNServer: Returning Content 1 '" << reply->targetUrl() << "' '" << reply->originatorUrl() << "'" << reply->heading() << endl;
         EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
         memory.sock->send(res);
@@ -155,6 +156,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         sockMap[id].slug = resource;
         sockMap[id].sock = socket;
         sockMap[id].state = CDN;
+        sockMap[id].serial = request->serial();
         sockMap[id].req = new inet::httptools::HttpRequestMessage(*request);
         requestContent(request, id, CDN);
     }
