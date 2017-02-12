@@ -86,7 +86,14 @@ void CDNServer::handleMessage(cMessage *msg) {
     if (msg2 == nullptr) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
-        Remember memory = sockMap.find(msg2->serial())->second;
+        auto i = sockMap.find(msg2->serial());
+        if (i == sockMap.end()) {
+            EV_INFO << "END OF MAP" << endl;
+            delete msg;
+            return;
+        }
+
+        Remember memory = i->second;
 
         // Content not found on neighbor CDN, request from origin
         if (memory.state == CDN && msg2->result() != 200) {
@@ -106,6 +113,7 @@ void CDNServer::handleMessage(cMessage *msg) {
         lru.put(memory.slug, msg2->payload());
         EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
 //        sockMap.erase(msg2->serial()); // TODO: cleanup sockMap!!!
+//        delete memory.req;
         delete msg;
     }
 };
@@ -121,8 +129,9 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     std::string origin = request->originatorUrl();
 
     if (lru.exists(resource)) {
-        // Directly repond
+        // Directly respond
         socket->send(genCacheResponse(request, resource));
+        delete msg;
 
     } else if (origin == "cdn1.example.org" || origin == "cdn2.example.org") {
         // If it's a request from the other CDN server and we don't have it
@@ -136,9 +145,9 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         sockMap[connId].slug = resource;
         sockMap[connId].serial = connId;
         sockMap[connId].sock = socket;
-        sockMap[connId].state = ORIGIN;
+        sockMap[connId].state = CDN;
         sockMap[connId].req = request;
-        requestContent(request, connId, ORIGIN);
+        requestContent(request, connId, CDN);
     }
 
     // Update service statistics
@@ -148,7 +157,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         case inet::httptools::CT_IMAGE: imgResourcesServed++; break;
         default: EV_WARN << "CDNServer: Received Unknown request type: " << resource << endl; break;
     };
-    delete msg; // Delete the received message here. Must not be deleted in the handler!
+//    delete msg; // Delete the received message here. Must not be deleted in the handler!
 };
 
 void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state) {
