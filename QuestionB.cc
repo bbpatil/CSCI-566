@@ -64,17 +64,25 @@ protected:
     struct Remember {
         inet::TCPSocket *sock;
         std::string slug;
-        int serial; // TODO: remove (its the key for this value in the map)
         State state;
         inet::httptools::HttpRequestMessage* req;
     };
 
+    // TODO: improve cache by providing content type too
+    struct CacheEntry {
+        std::string payload;
+        int contentType;
+    };
+
+    // DATA STRUCTURES
     std::map<int, Remember> sockMap;
     cache::lru_cache<std::string, std::string> lru;
 
+    // OVERRIDES
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
 
+    // INTERNAL METHODS
     void requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state);
     inet::httptools::HttpReplyMessage* genCacheResponse(inet::httptools::HttpRequestMessage *request, std::string resource);
 };
@@ -88,7 +96,7 @@ void CDNServer::handleMessage(cMessage *msg) {
     } else {
         auto i = sockMap.find(msg2->serial());
         if (i == sockMap.end()) {
-            EV_INFO << "END OF MAP" << endl;
+            EV_INFO << "TODO: figure out how we are doubling up here!!" << endl;
             delete msg;
             return;
         }
@@ -97,7 +105,7 @@ void CDNServer::handleMessage(cMessage *msg) {
 
         // Content not found on neighbor CDN, request from origin
         if (memory.state == CDN && msg2->result() != 200) {
-            EV_INFO << "CDNServer: Neighbor CDN didn't have content, requesting from Origin" << endl;
+            EV_INFO << "CDNServer: Neighbor CDN didn't have content, requesting from Origin: " << memory.req->heading() << endl;
             memory.state = ORIGIN;
             requestContent(memory.req, msg2->serial(), ORIGIN);
             delete msg;
@@ -106,14 +114,16 @@ void CDNServer::handleMessage(cMessage *msg) {
 
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
         res->setOriginatorUrl(hostName.c_str());
-        res->setSerial(memory.serial);
+        res->setSerial(msg2->serial());
         EV_INFO << "CDNServer: Returning Content 1 '" << msg2->targetUrl() << "' '" << msg2->originatorUrl() << "'" << msg2->heading() << endl;
         EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
         memory.sock->send(res);
-        lru.put(memory.slug, msg2->payload());
+        char payload[127];
+        strcpy(payload, msg2->payload());
+        lru.put(memory.slug, payload);
         EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
-//        sockMap.erase(msg2->serial()); // TODO: cleanup sockMap!!!
-//        delete memory.req;
+        sockMap.erase(msg2->serial());
+        EV_INFO << "CDNServer: Remaining active memory: " << sockMap.size() << endl;
         delete msg;
     }
 };
@@ -131,23 +141,22 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
     if (lru.exists(resource)) {
         // Directly respond
         socket->send(genCacheResponse(request, resource));
-        delete msg;
 
     } else if (origin == "cdn1.example.org" || origin == "cdn2.example.org") {
         // If it's a request from the other CDN server and we don't have it
         socket->send(generateErrorReply(request, 400));
         badRequests++;
-        delete msg;
+        delete msg; // Return here because we don't want statistics
         return;
 
     } else {
         // Create CDN Lookup Request
-        sockMap[connId].slug = resource;
-        sockMap[connId].serial = connId;
-        sockMap[connId].sock = socket;
-        sockMap[connId].state = CDN;
-        sockMap[connId].req = request;
-        requestContent(request, connId, CDN);
+        int id = simTime().raw(); // random number that kind-of guarantees this won't duplicate
+        sockMap[id].slug = resource;
+        sockMap[id].sock = socket;
+        sockMap[id].state = CDN;
+        sockMap[id].req = new inet::httptools::HttpRequestMessage(*request);
+        requestContent(request, id, CDN);
     }
 
     // Update service statistics
@@ -157,10 +166,10 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         case inet::httptools::CT_IMAGE: imgResourcesServed++; break;
         default: EV_WARN << "CDNServer: Received Unknown request type: " << resource << endl; break;
     };
-//    delete msg; // Delete the received message here. Must not be deleted in the handler!
+    delete msg;
 };
 
-void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state) {
+void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int id, State state) {
     inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*req);
     if (state == ORIGIN) {
         newRequest->setTargetUrl("origin.example.org");
@@ -170,8 +179,8 @@ void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int con
         newRequest->setTargetUrl("cdn1.example.org");
     }
     newRequest->setOriginatorUrl(hostName.c_str());
-    newRequest->setSerial(connID);
-    EV_INFO << "CDNServer: Requesting Content '" << req->targetUrl() << "' '" << req->originatorUrl() << "'"<< req->heading() << endl;
+    newRequest->setSerial(id);
+    EV_INFO << "CDNServer: Requesting Content: Target:'" << newRequest->targetUrl() << "'; Origin:'" << newRequest->originatorUrl() << "'; Heading "<< req->heading() << endl;
     this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
 };
 
