@@ -4,7 +4,7 @@
 #include "inet/applications/httptools/browser/HttpBrowser.h"
 #include "lru_h.hpp"
 
-using namespace omnetpp;
+namespace omnetpp {
 
 /*
  * Modified for debugging!
@@ -63,6 +63,7 @@ protected:
     struct Remember {
         inet::TCPSocket *sock;
         std::string slug;
+        int serial;
     };
 
     std::map<int, Remember> sockMap;
@@ -92,16 +93,10 @@ void CDNServer::handleMessage(cMessage *msg) {
             return;
         }
         Remember memory = i->second;
-        if (memory.sock->getState() != inet::TCPSocket::CONNECTED) {
-            EV_WARN << "Figure out why we hit this!!!" << endl;
-            sockMap.erase(msg2->serial());
-            delete msg;
-            return;
-        }
-
         EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << memory.sock->getState() << endl;
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
-         res->setOriginatorUrl(hostName.c_str());
+        res->setOriginatorUrl(hostName.c_str());
+        res->setSerial(memory.serial);
         EV_INFO << "CDNServer: Returning Content 1 '" << msg2->targetUrl() << "' '" << msg2->originatorUrl() << "'" << msg2->heading() << endl;
         EV_INFO << "CDNServer: Returning Content 2 '" << res->targetUrl() << "' '" << res->originatorUrl() << "'" << endl;
         memory.sock->send(res);
@@ -131,6 +126,7 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
         sockMap[connId].sock = socket;
         sockMap[connId].slug = resource;
+        sockMap[connId].serial = request->serial();
     } else {
         // Directly respond
         EV_INFO << "CDNServer: Found Resource " << resource << endl;
@@ -180,3 +176,5 @@ class StatsBrowser : public inet::httptools::HttpBrowser {};
 Define_Module(CDNServer);
 Define_Module(CDNBrowser);
 Define_Module(StatsBrowser);
+
+};
