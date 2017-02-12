@@ -76,7 +76,7 @@ protected:
 
     // DATA STRUCTURES
     std::map<int, Remember> sockMap;
-    cache::lru_cache<std::string, std::string> lru;
+    cache::lru_cache<std::string, CacheEntry> lru;
 
     // OVERRIDES
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
@@ -120,7 +120,7 @@ void CDNServer::handleMessage(cMessage *msg) {
         memory.sock->send(res);
         char payload[127];
         strcpy(payload, reply->payload());
-        lru.put(memory.slug, payload);
+        lru.put(memory.slug, CacheEntry{payload, reply->contentType()});
         EV_INFO << "CDNServer: Caching Resource" << memory.slug << endl;
         sockMap.erase(reply->serial());
         EV_INFO << "CDNServer: Remaining active memory: " << sockMap.size() << endl;
@@ -195,11 +195,12 @@ inet::httptools::HttpReplyMessage* CDNServer::genCacheResponse(inet::httptools::
     replymsg->setProtocol(request->protocol());
     replymsg->setSerial(request->serial());
     replymsg->setResult(200);
-    replymsg->setContentType(inet::httptools::CT_HTML);
     replymsg->setKind(HTTPT_RESPONSE_MESSAGE);
-    std::string body = lru.get(resource);
-    replymsg->setPayload(body.c_str());
-    replymsg->setByteLength(body.length());
+
+    CacheEntry entry = lru.get(resource);
+    replymsg->setPayload(entry.payload.c_str());
+    replymsg->setByteLength(entry.payload.length());
+    replymsg->setContentType(entry.contentType);
     return replymsg;
 };
 
