@@ -85,14 +85,7 @@ void CDNServer::handleMessage(cMessage *msg) {
     if (msg2 == nullptr) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
-
-        auto i = sockMap.find(msg2->serial());
-        if (i == sockMap.end()) {
-            EV_ERROR << "Figure out how we are hitting this!!!" << endl;
-            delete msg;
-            return;
-        }
-        Remember memory = i->second;
+        Remember memory = sockMap.find(msg2->serial())->second;
         EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << memory.sock->getState() << endl;
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
         res->setOriginatorUrl(hostName.c_str());
@@ -163,14 +156,21 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
  * StatsBrowser Implementation
  */
 
-class StatsBrowser : public inet::httptools::HttpBrowser {};
-//// HttpBrowserStats extends a basic HttpBrowser with received packet stats
-//class HttpBrowserStats : public inet::httptools::HttpBrowser {
-//protected:
-//    static simsignal_t rcvdPkSignal;
+class StatsBrowser : public inet::httptools::HttpBrowser {
+    protected:
+        static simsignal_t rcvdPkSignal;
+
+//        virtual void handleDataMessage(cMessage *msg) override;
+};
+
+simsignal_t StatsBrowser::rcvdPkSignal = registerSignal("rcvdPk");
+
+
+//void StatsBrowser::handleDataMessage(cMessage *msg) {
+//    EV << "NATE!!!" << endl;
+//    inet::httptools::HttpBrowser::handleDataMessage(msg);
 //};
-//
-//simsignal_t HttpBrowserStats::rcvdPkSignal = registerSignal("rcvdPk");
+
 // emit(rcvdPkSignal, msg);
 
 Define_Module(CDNServer);
