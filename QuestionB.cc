@@ -57,13 +57,15 @@ void CDNBrowser::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool
 class CDNServer : public inet::httptools::HttpServer {
 public:
     CDNServer();
-    ~CDNServer();
 
 protected:
+    enum State { CDN, ORIGIN };
+
     struct Remember {
         inet::TCPSocket *sock;
         std::string slug;
-        int serial;
+        int serial; // TODO: remove (its the key for this value in the map)
+        State state;
     };
 
     std::map<int, Remember> sockMap;
@@ -71,14 +73,11 @@ protected:
 
     virtual void socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool urgent) override;
     virtual void handleMessage(cMessage *msg) override;
+
+    void requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state);
 };
 
 CDNServer::CDNServer() : lru(2) {}; // TODO: parse 2 from model parameters
-CDNServer::~CDNServer() {
-    // This is crashing when closing the Simulation
-//    for (auto & elem : sockMap) delete elem.second;
-//    sockMap.clear();
-};
 
 void CDNServer::handleMessage(cMessage *msg) {
     inet::httptools::HttpReplyMessage *msg2 = dynamic_cast<inet::httptools::HttpReplyMessage *>(msg);
@@ -86,7 +85,6 @@ void CDNServer::handleMessage(cMessage *msg) {
         inet::httptools::HttpServer::handleMessage(msg);
     } else {
         Remember memory = sockMap.find(msg2->serial())->second;
-        EV_INFO << "FOUND SOCKET!!!" << msg2->serial() << " " << memory.sock->getState() << endl;
         inet::httptools::HttpReplyMessage *res = new inet::httptools::HttpReplyMessage(*msg2);
         res->setOriginatorUrl(hostName.c_str());
         res->setSerial(memory.serial);
@@ -110,16 +108,21 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
 
     // Search Cache
     if (!lru.exists(resource)) {
-        // Create Origin Lookup Request
-        inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
-        newRequest->setTargetUrl("origin.example.org");
-        newRequest->setSerial(socket->getConnectionId());
-        EV_INFO << "CDNServer: Requesting Content 1'" << request->targetUrl() << "' '" << request->originatorUrl() << "'"<< request->heading() << endl;
-        EV_INFO << "CDNServer: Requesting Content 2'" << newRequest->targetUrl() << "' '" << newRequest->originatorUrl() << "'" << request->heading() << endl;
-        this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
-        sockMap[connId].sock = socket;
+//        // Create Origin Lookup Request
+//        inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*request);
+//        newRequest->setTargetUrl("origin.example.org");
+//        newRequest->setSerial(socket->getConnectionId());
+//        EV_INFO << "CDNServer: Requesting Content'" << request->targetUrl() << "' '" << request->originatorUrl() << "'"<< request->heading() << endl;
+//        this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
+//        sockMap[connId].sock = socket;
+//        sockMap[connId].slug = resource;
+//        sockMap[connId].serial = request->serial();
+//        sockMap[connId].state = ORIGIN;
         sockMap[connId].slug = resource;
-        sockMap[connId].serial = request->serial();
+        sockMap[connId].serial = connId;
+        sockMap[connId].sock = socket;
+        sockMap[connId].state = ORIGIN;
+        requestContent(request, connId, ORIGIN);
     } else {
         // Directly respond
         EV_INFO << "CDNServer: Found Resource " << resource << endl;
@@ -138,7 +141,6 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         replymsg->setPayload(body.c_str());
         replymsg->setByteLength(body.length());
         socket->send(replymsg);
-
     }
 
     // Update service stats
@@ -149,6 +151,31 @@ void CDNServer::socketDataArrived(int connId, void *yourPtr, cPacket *msg, bool 
         default: EV_WARN << "CDNServer: Received Unknown request type: " << resource << endl; break;
     };
     delete msg; // Delete the received message here. Must not be deleted in the handler!
+};
+
+void CDNServer::requestContent(inet::httptools::HttpRequestMessage *req, int connID, State state) {
+    inet::httptools::HttpRequestMessage *newRequest = new inet::httptools::HttpRequestMessage(*req);
+    if (state == ORIGIN) {
+        newRequest->setTargetUrl("origin.example.org");
+    } else if (hostName == "cdn1.example.org") {
+        newRequest->setTargetUrl("cdn2.example.org");
+    } else {
+        newRequest->setTargetUrl("cdn1.example.org");
+    }
+    newRequest->setOriginatorUrl(hostName.c_str());
+    newRequest->setSerial(connID);
+    EV_INFO << "CDNServer: Requesting Content'" << req->targetUrl() << "' '" << req->originatorUrl() << "'"<< req->heading() << endl;
+    this->sendDirect(newRequest, this->getParentModule()->getSubmodule("tcpApp", 1), 0);
+//    sockMap[connId].sock = socket;
+//    sockMap[connId].slug = resource;
+//    sockMap[connId].serial = request->serial();
+//    sockMap[connId].state = state;
+//    return Remember{
+//      sock: socket,
+//      slug: resource,
+//      serial: request->serial(),
+//      state: state,
+//    };
 };
 
 

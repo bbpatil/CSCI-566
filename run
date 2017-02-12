@@ -3,12 +3,14 @@
 set -e # fail whole thing
 set -o pipefail # fail pipes
 
+export CONFIGNAME=gcc-debug
+
 echo "Building local package"
-make CONFIGNAME=gcc-debug
+make
 
 echo "Building inet package"
 pushd ../inet/src > /dev/null
-make CONFIGNAME=gcc-debug all
+make all
 popd > /dev/null
 
 echo "Starting simulation"
