@@ -30,12 +30,10 @@ run
 2. Content is initially stored only on the origin server.
 3. server1 and server2 have limited space in their caches. If they do not have the content cached, they issue an HTTP request for the content to the origin server and cache the reply. Implement LRU cache replacement policy with direct lookup of content.
 4. server1 and server2 check with each other before forwarding the request to the origin server.
-5. Show a graph of request delay versus cache size.
-*Note: For the following graphs, each simulation was run for a total of 200000 events and with a single client.*
-
-
+5. Show a graph of request delay versus cache size.  
+*Note: For the following graphs, each simulation was run for a total of 200000 events and with a single client.*  
 ###### Request by Resource
-![Request by Resource](RequestsResource.png)
+![Request by Resource](https://cdn.rawgit.com/bign8/CSCI-566/7f70fc5d/QuestionB-Requests_as_Resources_Stacked.svg)
 ###### Cache Size and Total Requests
 ![Cache Size and Total Requests](https://cdn.rawgit.com/bign8/CSCI-566/7f70fc5d/QuestionB-Cache-Size-and-Total-Reqeuest.svg)
 ###### Cache Size versus End to End Delay (in seconds)
