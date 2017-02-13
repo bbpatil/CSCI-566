@@ -1,7 +1,9 @@
 # CSCI-566 Project 1
 
-- Nate Woods
-- Lisa Peters
+- Nate Woods @bign8
+- Lisa Peters @s22f485
+
+Code available on [Github](https://github.com/bign8/CSCI-566)
 
 ## Compiling
 This has only been tested on Mac OSX Sierra
