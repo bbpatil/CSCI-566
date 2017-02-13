@@ -36,6 +36,7 @@ run
 4. server1 and server2 check with each other before forwarding the request to the origin server.
 5. Show a graph of request delay versus cache size.  
 *Note: For the following graphs, each simulation was run for a total of 200000 events and with a single client.*  
+*Data avialable in [Google Docs](https://docs.google.com/spreadsheets/d/1Eui5Tnm4ocvZuZmb4M2l9ocoyMkLClB5yz-O0-4t5ts)*
 
 ###### Request by Resource
 ![Request by Resource](https://cdn.rawgit.com/bign8/CSCI-566/7f70fc5d/QuestionB-Requests_as_Resources_Stacked.svg)
