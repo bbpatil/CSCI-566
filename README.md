@@ -34,13 +34,9 @@ run
 *Note: For the following graphs, each simulation was run for a total of 200000 events and with a single client.*
 
 
-<!--
-TODO Nate change image type if you wish.
-TODO Is delay mapped in milliseconds?
--->
 ###### Request by Resource
-![Alt text](RequestsResource.png)
+![Request by Resource](RequestsResource.png)
 ###### Cache Size and Total Requests
-![Alt text](CacheSizeTotalRequest.png)
-###### Cache Size versus End to End Delay
-![Alt text](CacheSizeDelay.png)
+![Cache Size and Total Requests](https://cdn.rawgit.com/bign8/CSCI-566/7f70fc5d/QuestionB-Cache-Size-and-Total-Reqeuest.svg)
+###### Cache Size versus End to End Delay (in seconds)
+![Cache Size versus End to End Delay](https://cdn.rawgit.com/bign8/CSCI-566/7f70fc5d/QuestionB-Cache-Size-vs-Delay.svg)
