@@ -108,7 +108,6 @@ network QuestionB {
                 @display("i=abstract/router_l;p=500,550");
         }
 
-        //TODO: have numClient as parameter, not hardcoded
         client[numclients]: StandardHost {
             parameters:
                 @display("i=device/laptop_l;p=950,550");
