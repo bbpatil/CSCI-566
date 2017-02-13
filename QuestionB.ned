@@ -22,8 +22,9 @@ simple CDNServer like ITCPApp {
         string siteDefinition = default("");            // The site script file. Blank to disable.
         double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable.
         xml config;                                     // The XML configuration file for random sites
+        int cacheSize = default(30);
     gates:
-        input responses @directIn; // CDNBrowser calls back into this
+        input responses @directIn; // Direct gate for CDNBrowser communication
         input tcpIn;
         output tcpOut;
 }
@@ -37,15 +38,28 @@ simple CDNBrowser like ITCPApp {
         xml config;                                     // The XML config file
         string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
     gates:
-        input requests @directIn; // CDNServer makes requests into here
+        input requests @directIn; // Direct gate for CDNSever communication
         input tcpIn;
         output tcpOut;
 }
 
-simple StatsBrowser extends HttpBrowser {
+// TODO: make this extends and still have the coverrides work correctly
+simple StatsBrowser like ITCPApp {
     parameters:
-      @signal[RTT](type="float");
-      @statistic[RTT](title="RTT"; source="RTT"; record=mean, sum, stats, vector);
+        int httpProtocol = default(11);                 // The http protocol: 10 for http/1.0, 11 for http/1.1. Not used at the present time.
+        string logFile = default("");                   // Name of a browser log file. Browse events are appended, allowing sharing of file for multiple browsers.
+        string scriptFile = default("");                // The browsing script file. Blank to disable.
+        double activationTime @unit("s") = default(0s); // The initial activation delay. Zero to disable. This is the time at which the browser first comes to life in a simulation scenario. Note that this can be any random distribution which OMNeT++ supports.
+        xml config;                                     // The XML config file
+        string httpBrowserControllerModule = default("controller"); // the absolute path to the http browser controller, @see HttpController
+
+    	// Statistics for measuring end to end delay
+        @signal[rcvdPk](type=cPacket);
+        @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
+
+	gates:
+        input tcpIn;
+        output tcpOut;
 }
 
 network QuestionB {

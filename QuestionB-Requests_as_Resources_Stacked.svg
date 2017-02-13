@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="371" aria-label="A chart." style="overflow: hidden;">
+  <defs id="defs">
+    <clipPath id="_ABSTRACT_RENDERER_ID_20">
+      <rect x="115" y="71" width="371" height="229"></rect>
+    </clipPath>
+  </defs>
+  <rect x="0" y="0" width="600" height="371" stroke="none" stroke-width="0" fill="#ffffff"></rect>
+  <g>
+    <text text-anchor="start" x="115" y="49.6" font-family="Arial" font-size="16" font-weight="bold" stroke="none" stroke-width="0" fill="#000000">Request by Resource</text>
+    <rect x="115" y="36" width="371" height="16" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+  </g>
+  <g>
+    <rect x="498" y="71" width="90" height="50" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+    <g>
+      <rect x="498" y="71" width="90" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+      <g>
+        <text text-anchor="start" x="527" y="81.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">Origin txt</text>
+      </g>
+      <rect x="498" y="77" width="24" height="6" stroke="none" stroke-width="0" fill-opacity="0.3" fill="#ff9900"></rect>
+      <path d="M498,77L522,77" stroke="#ff9900" stroke-width="2" fill-opacity="1" fill="none"></path>
+    </g>
+    <g>
+      <rect x="498" y="90" width="90" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+      <g>
+        <text text-anchor="start" x="527" y="100.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">Origin img</text>
+      </g>
+      <rect x="498" y="96" width="24" height="6" stroke="none" stroke-width="0" fill-opacity="0.3" fill="#dc3912"></rect>
+      <path d="M498,96L522,96" stroke="#dc3912" stroke-width="2" fill-opacity="1" fill="none"></path>
+    </g>
+    <g>
+      <rect x="498" y="109" width="90" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+      <g>
+        <text text-anchor="start" x="527" y="119.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">Origin html</text>
+      </g>
+      <rect x="498" y="115" width="24" height="6" stroke="none" stroke-width="0" fill-opacity="0.3" fill="#3366cc"></rect>
+      <path d="M498,115L522,115" stroke="#3366cc" stroke-width="2" fill-opacity="1" fill="none"></path>
+    </g>
+  </g>
+  <g>
+    <rect x="115" y="71" width="371" height="229" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+    <g clip-path="url(https://docs.google.com/spreadsheets/d/1Eui5Tnm4ocvZuZmb4M2l9ocoyMkLClB5yz-O0-4t5ts/edit#_ABSTRACT_RENDERER_ID_20)">
+      <g>
+        <rect x="115" y="299" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="242" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="185" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="128" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="71" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+      </g>
+      <g>
+        <g>
+          <path d="M115.5,299.5L115.5,299.5L115.5,294.94L140.16666666666666,294.94L164.83333333333334,294.94L189.5,294.94L214.16666666666669,294.94L238.83333333333334,294.94L263.5,294.94L288.1666666666667,294.94L312.83333333333337,294.94L337.5,292.66L362.1666666666667,292.66L386.83333333333337,292.66L411.5,283.54L436.1666666666667,285.82L460.83333333333337,285.82L485.5,285.82L485.5,299.5L485.5,299.5L460.83333333333337,299.5L436.1666666666667,299.5L411.5,299.5L386.83333333333337,299.5L362.1666666666667,299.5L337.5,299.5L312.83333333333337,299.5L288.1666666666667,299.5L263.5,299.5L238.83333333333334,299.5L214.16666666666669,299.5L189.5,299.5L164.83333333333334,299.5L140.16666666666666,299.5L115.5,299.5" stroke="none" stroke-width="0" fill-opacity="0.3" fill="#3366cc"></path>
+        </g>
+        <g>
+          <path d="M115.5,299.5L115.5,299.5L115.5,281.26L140.16666666666666,281.26L164.83333333333334,281.26L189.5,281.26L214.16666666666669,281.26L238.83333333333334,281.26L263.5,278.98L288.1666666666667,278.98L312.83333333333337,278.98L337.5,278.98L362.1666666666667,276.7L386.83333333333337,276.7L411.5,231.10000000000002L436.1666666666667,235.66L460.83333333333337,249.34L485.5,224.26L485.5,299.5L485.5,299.5L485.5,285.82L460.83333333333337,285.82L436.1666666666667,285.82L411.5,283.54L386.83333333333337,292.66L362.1666666666667,292.66L337.5,292.66L312.83333333333337,294.94L288.1666666666667,294.94L263.5,294.94L238.83333333333334,294.94L214.16666666666669,294.94L189.5,294.94L164.83333333333334,294.94L140.16666666666666,294.94L115.5,294.94L115.5,299.5" stroke="none" stroke-width="0" fill-opacity="0.3" fill="#dc3912"></path>
+        </g>
+        <g>
+          <path d="M115.5,299.5L115.5,299.5L115.5,247.06L140.16666666666666,247.06L164.83333333333334,247.06L189.5,247.06L214.16666666666669,247.06L238.83333333333334,247.06L263.5,242.5L288.1666666666667,240.22L312.83333333333337,235.66L337.5,233.38L362.1666666666667,226.54000000000002L386.83333333333337,226.54000000000002L411.5,137.62L436.1666666666667,123.94000000000003L460.83333333333337,133.06L485.5,142.18L485.5,299.5L485.5,299.5L485.5,224.26L460.83333333333337,249.34L436.1666666666667,235.66L411.5,231.10000000000002L386.83333333333337,276.7L362.1666666666667,276.7L337.5,278.98L312.83333333333337,278.98L288.1666666666667,278.98L263.5,278.98L238.83333333333334,281.26L214.16666666666669,281.26L189.5,281.26L164.83333333333334,281.26L140.16666666666666,281.26L115.5,281.26L115.5,299.5" stroke="none" stroke-width="0" fill-opacity="0.3" fill="#ff9900"></path>
+        </g>
+      </g>
+      <g>
+        <rect x="115" y="299" width="371" height="1" stroke="none" stroke-width="0" fill="#333333"></rect>
+      </g>
+      <g>
+        <path d="M115.5,294.94L140.16666666666666,294.94L164.83333333333334,294.94L189.5,294.94L214.16666666666669,294.94L238.83333333333334,294.94L263.5,294.94L288.1666666666667,294.94L312.83333333333337,294.94L337.5,292.66L362.1666666666667,292.66L386.83333333333337,292.66L411.5,283.54L436.1666666666667,285.82L460.83333333333337,285.82L485.5,285.82" stroke="#3366cc" stroke-width="2" fill-opacity="1" fill="none"></path>
+        <path d="M115.5,281.26L140.16666666666666,281.26L164.83333333333334,281.26L189.5,281.26L214.16666666666669,281.26L238.83333333333334,281.26L263.5,278.98L288.1666666666667,278.98L312.83333333333337,278.98L337.5,278.98L362.1666666666667,276.7L386.83333333333337,276.7L411.5,231.10000000000002L436.1666666666667,235.66L460.83333333333337,249.34L485.5,224.26" stroke="#dc3912" stroke-width="2" fill-opacity="1" fill="none"></path>
+        <path d="M115.5,247.06L140.16666666666666,247.06L164.83333333333334,247.06L189.5,247.06L214.16666666666669,247.06L238.83333333333334,247.06L263.5,242.5L288.1666666666667,240.22L312.83333333333337,235.66L337.5,233.38L362.1666666666667,226.54000000000002L386.83333333333337,226.54000000000002L411.5,137.62L436.1666666666667,123.94000000000003L460.83333333333337,133.06L485.5,142.18" stroke="#ff9900" stroke-width="2" fill-opacity="1" fill="none"></path>
+      </g>
+    </g>
+    <g></g>
+    <g>
+      <g>
+        <text text-anchor="end" x="103" y="303.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="246.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">25</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="189.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">50</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="132.70000000000002" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">75</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="75.70000000000003" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">100</text>
+      </g>
+    </g>
+  </g>
+  <g></g>
+</svg>

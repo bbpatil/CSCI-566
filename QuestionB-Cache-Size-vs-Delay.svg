@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="371" aria-label="A chart." style="overflow: hidden;">
+  <defs id="defs">
+    <clipPath id="_ABSTRACT_RENDERER_ID_19">
+      <rect x="115" y="71" width="371" height="229"></rect>
+    </clipPath>
+  </defs>
+  <rect x="0" y="0" width="600" height="371" stroke="none" stroke-width="0" fill="#ffffff"></rect>
+  <g>
+    <text text-anchor="start" x="115" y="49.6" font-family="Arial" font-size="16" font-weight="bold" stroke="none" stroke-width="0" fill="#000000">Cache Size vs Delay</text>
+    <rect x="115" y="36" width="371" height="16" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+  </g>
+  <g>
+    <rect x="115" y="71" width="371" height="229" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+    <g clip-path="url(https://docs.google.com/spreadsheets/d/1Eui5Tnm4ocvZuZmb4M2l9ocoyMkLClB5yz-O0-4t5ts/edit#_ABSTRACT_RENDERER_ID_19)">
+      <g>
+        <rect x="115" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="177" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="238" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="300" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="362" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="423" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="485" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="299" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="242" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="185" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="128" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+        <rect x="115" y="71" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"></rect>
+      </g>
+      <g>
+        <rect x="115" y="71" width="1" height="229" stroke="none" stroke-width="0" fill="#333333"></rect>
+        <rect x="115" y="299" width="371" height="1" stroke="none" stroke-width="0" fill="#333333"></rect>
+      </g>
+      <g>
+        <path d="M485.5,269.799808564357L423.83333333333337,269.799808564357L386.83333333333337,269.799808564357L362.1666666666667,269.799808564357L337.5,269.799808564357L312.83333333333337,269.799808564357L288.1666666666667,265.18898037234084L263.5,264.7769775000005L238.83333333333334,256.9396723033715L214.16666666666669,265.8403086486487L189.5,270.270122651006L164.83333333333334,270.270122651006L152.5,159.19693784615416L140.16666666666666,165.95325823529396L127.83333333333333,155.228255588242L115.5,110.8851409230835" stroke="#3366cc" stroke-width="2" fill-opacity="1" fill="none"></path>
+      </g>
+    </g>
+    <g></g>
+    <g>
+      <g>
+        <text text-anchor="middle" x="115.5" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0</text>
+      </g>
+      <g>
+        <text text-anchor="middle" x="177.16666666666669" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">5</text>
+      </g>
+      <g>
+        <text text-anchor="middle" x="238.83333333333334" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">10</text>
+      </g>
+      <g>
+        <text text-anchor="middle" x="300.5" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">15</text>
+      </g>
+      <g>
+        <text text-anchor="middle" x="362.1666666666667" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">20</text>
+      </g>
+      <g>
+        <text text-anchor="middle" x="423.83333333333337" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">25</text>
+      </g>
+      <g>
+        <text text-anchor="middle" x="485.5" y="317.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">30</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="303.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="246.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0.004</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="189.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0.008</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="132.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0.012</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="75.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0.016</text>
+      </g>
+    </g>
+  </g>
+  <g>
+    <g>
+      <text text-anchor="middle" x="300.5" y="349.2" font-family="Arial" font-size="12" font-style="italic" stroke="none" stroke-width="0" fill="#222222">Cache Size</text>
+      <rect x="115" y="339" width="371" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
+    </g>
+    <g>
+      <text text-anchor="middle" x="40.7" y="185.5" font-family="Arial" font-size="12" font-style="italic" transform="rotate(-90 40.7 185.5)" stroke="none" stroke-width="0" fill="#222222">End-to-End Delay</text>
+      <path d="M30.499999999999996,300L30.50000000000001,71L42.50000000000001,71L42.49999999999999,300Z" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></path>
+    </g>
+  </g>
+  <g></g>
+</svg>

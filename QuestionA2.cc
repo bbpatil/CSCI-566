@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
+#include "QuestionA2_m.h"
 
 using namespace omnetpp;
-
-#include "QuestionA2_m.h"
 
 class TxcA2 : public cSimpleModule {
   protected:

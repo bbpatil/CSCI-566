@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="371" aria-label="A chart." style="overflow: hidden;">
+  <defs id="defs">
+    <clipPath id="_ABSTRACT_RENDERER_ID_21">
+      <rect x="115" y="71" width="371" height="229"/>
+    </clipPath>
+  </defs>
+  <rect x="0" y="0" width="600" height="371" stroke="none" stroke-width="0" fill="#ffffff"/>
+  <g>
+    <text text-anchor="start" x="115" y="31.6" font-family="Arial" font-size="16" font-weight="bold" stroke="none" stroke-width="0" fill="#000000">Cache Size and Total Requests</text>
+    <rect x="115" y="18" width="371" height="16" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"/>
+  </g>
+  <g>
+    <rect x="115" y="41" width="217" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"/>
+    <g>
+      <rect x="115" y="41" width="90" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"/>
+      <g>
+        <text text-anchor="start" x="144" y="51.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">Cache Size</text>
+      </g>
+      <rect x="115" y="41" width="24" height="12" stroke="none" stroke-width="0" fill="#3366cc"/>
+    </g>
+    <g>
+      <rect x="224" y="41" width="108" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"/>
+      <g>
+        <text text-anchor="start" x="253" y="51.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">Total Requests</text>
+      </g>
+      <rect x="224" y="41" width="24" height="12" stroke="none" stroke-width="0" fill="#dc3912"/>
+    </g>
+  </g>
+  <g>
+    <rect x="115" y="71" width="371" height="229" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"/>
+    <g clip-path="url(https://docs.google.com/spreadsheets/d/1Eui5Tnm4ocvZuZmb4M2l9ocoyMkLClB5yz-O0-4t5ts/edit#_ABSTRACT_RENDERER_ID_21)">
+      <g>
+        <rect x="115" y="299" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"/>
+        <rect x="115" y="242" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"/>
+        <rect x="115" y="185" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"/>
+        <rect x="115" y="128" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"/>
+        <rect x="115" y="71" width="371" height="1" stroke="none" stroke-width="0" fill="#cccccc"/>
+      </g>
+      <g>
+        <rect x="120" y="232" width="7" height="67" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="143" y="243" width="7" height="56" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="166" y="250" width="7" height="49" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="189" y="254" width="7" height="45" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="212" y="259" width="7" height="40" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="236" y="264" width="6" height="35" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="259" y="268" width="6" height="31" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="282" y="273" width="6" height="26" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="305" y="277" width="7" height="22" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="328" y="282" width="7" height="17" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="351" y="286" width="7" height="13" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="374" y="291" width="7" height="8" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="397" y="293" width="7" height="6" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="421" y="295" width="6" height="4" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="444" y="297.67600000000004" width="6" height="1.8239999999999554" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="467" y="299" width="6" height="0.5" stroke="none" stroke-width="0" fill="#3366cc"/>
+        <rect x="128" y="248" width="6" height="51" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="151" y="248" width="6" height="51" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="174" y="248" width="6" height="51" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="197" y="248" width="7" height="51" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="220" y="248" width="7" height="51" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="243" y="248" width="7" height="51" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="266" y="243" width="7" height="56" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="289" y="241" width="7" height="58" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="313" y="236" width="6" height="63" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="336" y="234" width="6" height="65" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="359" y="227" width="6" height="72" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="382" y="227" width="7" height="72" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="405" y="138" width="7" height="161" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="428" y="124" width="7" height="175" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="451" y="134" width="7" height="165" stroke="none" stroke-width="0" fill="#dc3912"/>
+        <rect x="474" y="143" width="7" height="156" stroke="none" stroke-width="0" fill="#dc3912"/>
+      </g>
+      <g>
+        <rect x="115" y="299" width="371" height="1" stroke="none" stroke-width="0" fill="#333333"/>
+      </g>
+    </g>
+    <g/>
+    <g>
+      <g>
+        <text text-anchor="end" x="103" y="303.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">0</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="246.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">25</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="189.7" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">50</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="132.70000000000002" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">75</text>
+      </g>
+      <g>
+        <text text-anchor="end" x="103" y="75.70000000000003" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#444444">100</text>
+      </g>
+    </g>
+  </g>
+  <g>
+    <g>
+      <text text-anchor="middle" x="45.7" y="185.5" font-family="Arial" font-size="12" font-style="italic" transform="rotate(-90 45.7 185.5)" stroke="none" stroke-width="0" fill="#222222">Cache Size</text>
+      <path d="M35.49999999999999,300L35.50000000000001,71L47.50000000000001,71L47.49999999999999,300Z" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"/>
+    </g>
+  </g>
+  <g/>
+</svg>
